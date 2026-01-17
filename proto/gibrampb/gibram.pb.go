@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.11
 // 	protoc        v6.33.2
-// source: gibram.proto
+// source: proto/gibram.proto
 
 package gibrampb
 
@@ -276,11 +276,11 @@ func (x CommandType) String() string {
 }
 
 func (CommandType) Descriptor() protoreflect.EnumDescriptor {
-	return file_gibram_proto_enumTypes[0].Descriptor()
+	return file_proto_gibram_proto_enumTypes[0].Descriptor()
 }
 
 func (CommandType) Type() protoreflect.EnumType {
-	return &file_gibram_proto_enumTypes[0]
+	return &file_proto_gibram_proto_enumTypes[0]
 }
 
 func (x CommandType) Number() protoreflect.EnumNumber {
@@ -289,7 +289,7 @@ func (x CommandType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use CommandType.Descriptor instead.
 func (CommandType) EnumDescriptor() ([]byte, []int) {
-	return file_gibram_proto_rawDescGZIP(), []int{0}
+	return file_proto_gibram_proto_rawDescGZIP(), []int{0}
 }
 
 type Envelope struct {
@@ -305,7 +305,7 @@ type Envelope struct {
 
 func (x *Envelope) Reset() {
 	*x = Envelope{}
-	mi := &file_gibram_proto_msgTypes[0]
+	mi := &file_proto_gibram_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -317,7 +317,7 @@ func (x *Envelope) String() string {
 func (*Envelope) ProtoMessage() {}
 
 func (x *Envelope) ProtoReflect() protoreflect.Message {
-	mi := &file_gibram_proto_msgTypes[0]
+	mi := &file_proto_gibram_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -330,7 +330,7 @@ func (x *Envelope) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Envelope.ProtoReflect.Descriptor instead.
 func (*Envelope) Descriptor() ([]byte, []int) {
-	return file_gibram_proto_rawDescGZIP(), []int{0}
+	return file_proto_gibram_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *Envelope) GetVersion() uint32 {
@@ -376,7 +376,7 @@ type Empty struct {
 
 func (x *Empty) Reset() {
 	*x = Empty{}
-	mi := &file_gibram_proto_msgTypes[1]
+	mi := &file_proto_gibram_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -388,7 +388,7 @@ func (x *Empty) String() string {
 func (*Empty) ProtoMessage() {}
 
 func (x *Empty) ProtoReflect() protoreflect.Message {
-	mi := &file_gibram_proto_msgTypes[1]
+	mi := &file_proto_gibram_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -401,7 +401,7 @@ func (x *Empty) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Empty.ProtoReflect.Descriptor instead.
 func (*Empty) Descriptor() ([]byte, []int) {
-	return file_gibram_proto_rawDescGZIP(), []int{1}
+	return file_proto_gibram_proto_rawDescGZIP(), []int{1}
 }
 
 type Error struct {
@@ -414,7 +414,7 @@ type Error struct {
 
 func (x *Error) Reset() {
 	*x = Error{}
-	mi := &file_gibram_proto_msgTypes[2]
+	mi := &file_proto_gibram_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -426,7 +426,7 @@ func (x *Error) String() string {
 func (*Error) ProtoMessage() {}
 
 func (x *Error) ProtoReflect() protoreflect.Message {
-	mi := &file_gibram_proto_msgTypes[2]
+	mi := &file_proto_gibram_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -439,7 +439,7 @@ func (x *Error) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Error.ProtoReflect.Descriptor instead.
 func (*Error) Descriptor() ([]byte, []int) {
-	return file_gibram_proto_rawDescGZIP(), []int{2}
+	return file_proto_gibram_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *Error) GetMessage() string {
@@ -465,7 +465,7 @@ type OkWithID struct {
 
 func (x *OkWithID) Reset() {
 	*x = OkWithID{}
-	mi := &file_gibram_proto_msgTypes[3]
+	mi := &file_proto_gibram_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -477,7 +477,7 @@ func (x *OkWithID) String() string {
 func (*OkWithID) ProtoMessage() {}
 
 func (x *OkWithID) ProtoReflect() protoreflect.Message {
-	mi := &file_gibram_proto_msgTypes[3]
+	mi := &file_proto_gibram_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -490,7 +490,7 @@ func (x *OkWithID) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OkWithID.ProtoReflect.Descriptor instead.
 func (*OkWithID) Descriptor() ([]byte, []int) {
-	return file_gibram_proto_rawDescGZIP(), []int{3}
+	return file_proto_gibram_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *OkWithID) GetId() uint64 {
@@ -516,7 +516,7 @@ type InfoResponse struct {
 
 func (x *InfoResponse) Reset() {
 	*x = InfoResponse{}
-	mi := &file_gibram_proto_msgTypes[4]
+	mi := &file_proto_gibram_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -528,7 +528,7 @@ func (x *InfoResponse) String() string {
 func (*InfoResponse) ProtoMessage() {}
 
 func (x *InfoResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_gibram_proto_msgTypes[4]
+	mi := &file_proto_gibram_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -541,7 +541,7 @@ func (x *InfoResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use InfoResponse.ProtoReflect.Descriptor instead.
 func (*InfoResponse) Descriptor() ([]byte, []int) {
-	return file_gibram_proto_rawDescGZIP(), []int{4}
+	return file_proto_gibram_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *InfoResponse) GetVersion() string {
@@ -618,7 +618,7 @@ type SessionInfo struct {
 
 func (x *SessionInfo) Reset() {
 	*x = SessionInfo{}
-	mi := &file_gibram_proto_msgTypes[5]
+	mi := &file_proto_gibram_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -630,7 +630,7 @@ func (x *SessionInfo) String() string {
 func (*SessionInfo) ProtoMessage() {}
 
 func (x *SessionInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_gibram_proto_msgTypes[5]
+	mi := &file_proto_gibram_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -643,7 +643,7 @@ func (x *SessionInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SessionInfo.ProtoReflect.Descriptor instead.
 func (*SessionInfo) Descriptor() ([]byte, []int) {
-	return file_gibram_proto_rawDescGZIP(), []int{5}
+	return file_proto_gibram_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *SessionInfo) GetSessionId() string {
@@ -725,7 +725,7 @@ type ListSessionsResponse struct {
 
 func (x *ListSessionsResponse) Reset() {
 	*x = ListSessionsResponse{}
-	mi := &file_gibram_proto_msgTypes[6]
+	mi := &file_proto_gibram_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -737,7 +737,7 @@ func (x *ListSessionsResponse) String() string {
 func (*ListSessionsResponse) ProtoMessage() {}
 
 func (x *ListSessionsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_gibram_proto_msgTypes[6]
+	mi := &file_proto_gibram_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -750,7 +750,7 @@ func (x *ListSessionsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListSessionsResponse.ProtoReflect.Descriptor instead.
 func (*ListSessionsResponse) Descriptor() ([]byte, []int) {
-	return file_gibram_proto_rawDescGZIP(), []int{6}
+	return file_proto_gibram_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *ListSessionsResponse) GetSessions() []*SessionInfo {
@@ -769,7 +769,7 @@ type DeleteSessionRequest struct {
 
 func (x *DeleteSessionRequest) Reset() {
 	*x = DeleteSessionRequest{}
-	mi := &file_gibram_proto_msgTypes[7]
+	mi := &file_proto_gibram_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -781,7 +781,7 @@ func (x *DeleteSessionRequest) String() string {
 func (*DeleteSessionRequest) ProtoMessage() {}
 
 func (x *DeleteSessionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gibram_proto_msgTypes[7]
+	mi := &file_proto_gibram_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -794,7 +794,7 @@ func (x *DeleteSessionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteSessionRequest.ProtoReflect.Descriptor instead.
 func (*DeleteSessionRequest) Descriptor() ([]byte, []int) {
-	return file_gibram_proto_rawDescGZIP(), []int{7}
+	return file_proto_gibram_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *DeleteSessionRequest) GetSessionId() string {
@@ -813,7 +813,7 @@ type SessionInfoRequest struct {
 
 func (x *SessionInfoRequest) Reset() {
 	*x = SessionInfoRequest{}
-	mi := &file_gibram_proto_msgTypes[8]
+	mi := &file_proto_gibram_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -825,7 +825,7 @@ func (x *SessionInfoRequest) String() string {
 func (*SessionInfoRequest) ProtoMessage() {}
 
 func (x *SessionInfoRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gibram_proto_msgTypes[8]
+	mi := &file_proto_gibram_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -838,7 +838,7 @@ func (x *SessionInfoRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SessionInfoRequest.ProtoReflect.Descriptor instead.
 func (*SessionInfoRequest) Descriptor() ([]byte, []int) {
-	return file_gibram_proto_rawDescGZIP(), []int{8}
+	return file_proto_gibram_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *SessionInfoRequest) GetSessionId() string {
@@ -859,7 +859,7 @@ type SetSessionTTLRequest struct {
 
 func (x *SetSessionTTLRequest) Reset() {
 	*x = SetSessionTTLRequest{}
-	mi := &file_gibram_proto_msgTypes[9]
+	mi := &file_proto_gibram_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -871,7 +871,7 @@ func (x *SetSessionTTLRequest) String() string {
 func (*SetSessionTTLRequest) ProtoMessage() {}
 
 func (x *SetSessionTTLRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gibram_proto_msgTypes[9]
+	mi := &file_proto_gibram_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -884,7 +884,7 @@ func (x *SetSessionTTLRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetSessionTTLRequest.ProtoReflect.Descriptor instead.
 func (*SetSessionTTLRequest) Descriptor() ([]byte, []int) {
-	return file_gibram_proto_rawDescGZIP(), []int{9}
+	return file_proto_gibram_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *SetSessionTTLRequest) GetSessionId() string {
@@ -917,7 +917,7 @@ type TouchSessionRequest struct {
 
 func (x *TouchSessionRequest) Reset() {
 	*x = TouchSessionRequest{}
-	mi := &file_gibram_proto_msgTypes[10]
+	mi := &file_proto_gibram_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -929,7 +929,7 @@ func (x *TouchSessionRequest) String() string {
 func (*TouchSessionRequest) ProtoMessage() {}
 
 func (x *TouchSessionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gibram_proto_msgTypes[10]
+	mi := &file_proto_gibram_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -942,7 +942,7 @@ func (x *TouchSessionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TouchSessionRequest.ProtoReflect.Descriptor instead.
 func (*TouchSessionRequest) Descriptor() ([]byte, []int) {
-	return file_gibram_proto_rawDescGZIP(), []int{10}
+	return file_proto_gibram_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *TouchSessionRequest) GetSessionId() string {
@@ -966,7 +966,7 @@ type Document struct {
 
 func (x *Document) Reset() {
 	*x = Document{}
-	mi := &file_gibram_proto_msgTypes[11]
+	mi := &file_proto_gibram_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -978,7 +978,7 @@ func (x *Document) String() string {
 func (*Document) ProtoMessage() {}
 
 func (x *Document) ProtoReflect() protoreflect.Message {
-	mi := &file_gibram_proto_msgTypes[11]
+	mi := &file_proto_gibram_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -991,7 +991,7 @@ func (x *Document) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Document.ProtoReflect.Descriptor instead.
 func (*Document) Descriptor() ([]byte, []int) {
-	return file_gibram_proto_rawDescGZIP(), []int{11}
+	return file_proto_gibram_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *Document) GetId() uint64 {
@@ -1046,7 +1046,7 @@ type AddDocumentRequest struct {
 
 func (x *AddDocumentRequest) Reset() {
 	*x = AddDocumentRequest{}
-	mi := &file_gibram_proto_msgTypes[12]
+	mi := &file_proto_gibram_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1058,7 +1058,7 @@ func (x *AddDocumentRequest) String() string {
 func (*AddDocumentRequest) ProtoMessage() {}
 
 func (x *AddDocumentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gibram_proto_msgTypes[12]
+	mi := &file_proto_gibram_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1071,7 +1071,7 @@ func (x *AddDocumentRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AddDocumentRequest.ProtoReflect.Descriptor instead.
 func (*AddDocumentRequest) Descriptor() ([]byte, []int) {
-	return file_gibram_proto_rawDescGZIP(), []int{12}
+	return file_proto_gibram_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *AddDocumentRequest) GetExternalId() string {
@@ -1103,7 +1103,7 @@ type TextUnit struct {
 
 func (x *TextUnit) Reset() {
 	*x = TextUnit{}
-	mi := &file_gibram_proto_msgTypes[13]
+	mi := &file_proto_gibram_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1115,7 +1115,7 @@ func (x *TextUnit) String() string {
 func (*TextUnit) ProtoMessage() {}
 
 func (x *TextUnit) ProtoReflect() protoreflect.Message {
-	mi := &file_gibram_proto_msgTypes[13]
+	mi := &file_proto_gibram_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1128,7 +1128,7 @@ func (x *TextUnit) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TextUnit.ProtoReflect.Descriptor instead.
 func (*TextUnit) Descriptor() ([]byte, []int) {
-	return file_gibram_proto_rawDescGZIP(), []int{13}
+	return file_proto_gibram_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *TextUnit) GetId() uint64 {
@@ -1193,7 +1193,7 @@ type AddTextUnitRequest struct {
 
 func (x *AddTextUnitRequest) Reset() {
 	*x = AddTextUnitRequest{}
-	mi := &file_gibram_proto_msgTypes[14]
+	mi := &file_proto_gibram_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1205,7 +1205,7 @@ func (x *AddTextUnitRequest) String() string {
 func (*AddTextUnitRequest) ProtoMessage() {}
 
 func (x *AddTextUnitRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gibram_proto_msgTypes[14]
+	mi := &file_proto_gibram_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1218,7 +1218,7 @@ func (x *AddTextUnitRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AddTextUnitRequest.ProtoReflect.Descriptor instead.
 func (*AddTextUnitRequest) Descriptor() ([]byte, []int) {
-	return file_gibram_proto_rawDescGZIP(), []int{14}
+	return file_proto_gibram_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *AddTextUnitRequest) GetExternalId() string {
@@ -1271,7 +1271,7 @@ type Entity struct {
 
 func (x *Entity) Reset() {
 	*x = Entity{}
-	mi := &file_gibram_proto_msgTypes[15]
+	mi := &file_proto_gibram_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1283,7 +1283,7 @@ func (x *Entity) String() string {
 func (*Entity) ProtoMessage() {}
 
 func (x *Entity) ProtoReflect() protoreflect.Message {
-	mi := &file_gibram_proto_msgTypes[15]
+	mi := &file_proto_gibram_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1296,7 +1296,7 @@ func (x *Entity) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Entity.ProtoReflect.Descriptor instead.
 func (*Entity) Descriptor() ([]byte, []int) {
-	return file_gibram_proto_rawDescGZIP(), []int{15}
+	return file_proto_gibram_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *Entity) GetId() uint64 {
@@ -1361,7 +1361,7 @@ type AddEntityRequest struct {
 
 func (x *AddEntityRequest) Reset() {
 	*x = AddEntityRequest{}
-	mi := &file_gibram_proto_msgTypes[16]
+	mi := &file_proto_gibram_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1373,7 +1373,7 @@ func (x *AddEntityRequest) String() string {
 func (*AddEntityRequest) ProtoMessage() {}
 
 func (x *AddEntityRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gibram_proto_msgTypes[16]
+	mi := &file_proto_gibram_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1386,7 +1386,7 @@ func (x *AddEntityRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AddEntityRequest.ProtoReflect.Descriptor instead.
 func (*AddEntityRequest) Descriptor() ([]byte, []int) {
-	return file_gibram_proto_rawDescGZIP(), []int{16}
+	return file_proto_gibram_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *AddEntityRequest) GetExternalId() string {
@@ -1433,7 +1433,7 @@ type GetEntityByTitleRequest struct {
 
 func (x *GetEntityByTitleRequest) Reset() {
 	*x = GetEntityByTitleRequest{}
-	mi := &file_gibram_proto_msgTypes[17]
+	mi := &file_proto_gibram_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1445,7 +1445,7 @@ func (x *GetEntityByTitleRequest) String() string {
 func (*GetEntityByTitleRequest) ProtoMessage() {}
 
 func (x *GetEntityByTitleRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gibram_proto_msgTypes[17]
+	mi := &file_proto_gibram_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1458,7 +1458,7 @@ func (x *GetEntityByTitleRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetEntityByTitleRequest.ProtoReflect.Descriptor instead.
 func (*GetEntityByTitleRequest) Descriptor() ([]byte, []int) {
-	return file_gibram_proto_rawDescGZIP(), []int{17}
+	return file_proto_gibram_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *GetEntityByTitleRequest) GetTitle() string {
@@ -1479,7 +1479,7 @@ type UpdateEntityDescRequest struct {
 
 func (x *UpdateEntityDescRequest) Reset() {
 	*x = UpdateEntityDescRequest{}
-	mi := &file_gibram_proto_msgTypes[18]
+	mi := &file_proto_gibram_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1491,7 +1491,7 @@ func (x *UpdateEntityDescRequest) String() string {
 func (*UpdateEntityDescRequest) ProtoMessage() {}
 
 func (x *UpdateEntityDescRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gibram_proto_msgTypes[18]
+	mi := &file_proto_gibram_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1504,7 +1504,7 @@ func (x *UpdateEntityDescRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateEntityDescRequest.ProtoReflect.Descriptor instead.
 func (*UpdateEntityDescRequest) Descriptor() ([]byte, []int) {
-	return file_gibram_proto_rawDescGZIP(), []int{18}
+	return file_proto_gibram_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *UpdateEntityDescRequest) GetId() uint64 {
@@ -1544,7 +1544,7 @@ type Relationship struct {
 
 func (x *Relationship) Reset() {
 	*x = Relationship{}
-	mi := &file_gibram_proto_msgTypes[19]
+	mi := &file_proto_gibram_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1556,7 +1556,7 @@ func (x *Relationship) String() string {
 func (*Relationship) ProtoMessage() {}
 
 func (x *Relationship) ProtoReflect() protoreflect.Message {
-	mi := &file_gibram_proto_msgTypes[19]
+	mi := &file_proto_gibram_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1569,7 +1569,7 @@ func (x *Relationship) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Relationship.ProtoReflect.Descriptor instead.
 func (*Relationship) Descriptor() ([]byte, []int) {
-	return file_gibram_proto_rawDescGZIP(), []int{19}
+	return file_proto_gibram_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *Relationship) GetId() uint64 {
@@ -1642,7 +1642,7 @@ type AddRelationshipRequest struct {
 
 func (x *AddRelationshipRequest) Reset() {
 	*x = AddRelationshipRequest{}
-	mi := &file_gibram_proto_msgTypes[20]
+	mi := &file_proto_gibram_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1654,7 +1654,7 @@ func (x *AddRelationshipRequest) String() string {
 func (*AddRelationshipRequest) ProtoMessage() {}
 
 func (x *AddRelationshipRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gibram_proto_msgTypes[20]
+	mi := &file_proto_gibram_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1667,7 +1667,7 @@ func (x *AddRelationshipRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AddRelationshipRequest.ProtoReflect.Descriptor instead.
 func (*AddRelationshipRequest) Descriptor() ([]byte, []int) {
-	return file_gibram_proto_rawDescGZIP(), []int{20}
+	return file_proto_gibram_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *AddRelationshipRequest) GetExternalId() string {
@@ -1729,7 +1729,7 @@ type Community struct {
 
 func (x *Community) Reset() {
 	*x = Community{}
-	mi := &file_gibram_proto_msgTypes[21]
+	mi := &file_proto_gibram_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1741,7 +1741,7 @@ func (x *Community) String() string {
 func (*Community) ProtoMessage() {}
 
 func (x *Community) ProtoReflect() protoreflect.Message {
-	mi := &file_gibram_proto_msgTypes[21]
+	mi := &file_proto_gibram_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1754,7 +1754,7 @@ func (x *Community) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Community.ProtoReflect.Descriptor instead.
 func (*Community) Descriptor() ([]byte, []int) {
-	return file_gibram_proto_rawDescGZIP(), []int{21}
+	return file_proto_gibram_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *Community) GetId() uint64 {
@@ -1836,7 +1836,7 @@ type AddCommunityRequest struct {
 
 func (x *AddCommunityRequest) Reset() {
 	*x = AddCommunityRequest{}
-	mi := &file_gibram_proto_msgTypes[22]
+	mi := &file_proto_gibram_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1848,7 +1848,7 @@ func (x *AddCommunityRequest) String() string {
 func (*AddCommunityRequest) ProtoMessage() {}
 
 func (x *AddCommunityRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gibram_proto_msgTypes[22]
+	mi := &file_proto_gibram_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1861,7 +1861,7 @@ func (x *AddCommunityRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AddCommunityRequest.ProtoReflect.Descriptor instead.
 func (*AddCommunityRequest) Descriptor() ([]byte, []int) {
-	return file_gibram_proto_rawDescGZIP(), []int{22}
+	return file_proto_gibram_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *AddCommunityRequest) GetExternalId() string {
@@ -1930,7 +1930,7 @@ type ComputeCommunitiesRequest struct {
 
 func (x *ComputeCommunitiesRequest) Reset() {
 	*x = ComputeCommunitiesRequest{}
-	mi := &file_gibram_proto_msgTypes[23]
+	mi := &file_proto_gibram_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1942,7 +1942,7 @@ func (x *ComputeCommunitiesRequest) String() string {
 func (*ComputeCommunitiesRequest) ProtoMessage() {}
 
 func (x *ComputeCommunitiesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gibram_proto_msgTypes[23]
+	mi := &file_proto_gibram_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1955,7 +1955,7 @@ func (x *ComputeCommunitiesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ComputeCommunitiesRequest.ProtoReflect.Descriptor instead.
 func (*ComputeCommunitiesRequest) Descriptor() ([]byte, []int) {
-	return file_gibram_proto_rawDescGZIP(), []int{23}
+	return file_proto_gibram_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *ComputeCommunitiesRequest) GetResolution() float64 {
@@ -1982,7 +1982,7 @@ type ComputeCommunitiesResponse struct {
 
 func (x *ComputeCommunitiesResponse) Reset() {
 	*x = ComputeCommunitiesResponse{}
-	mi := &file_gibram_proto_msgTypes[24]
+	mi := &file_proto_gibram_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1994,7 +1994,7 @@ func (x *ComputeCommunitiesResponse) String() string {
 func (*ComputeCommunitiesResponse) ProtoMessage() {}
 
 func (x *ComputeCommunitiesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_gibram_proto_msgTypes[24]
+	mi := &file_proto_gibram_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2007,7 +2007,7 @@ func (x *ComputeCommunitiesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ComputeCommunitiesResponse.ProtoReflect.Descriptor instead.
 func (*ComputeCommunitiesResponse) Descriptor() ([]byte, []int) {
-	return file_gibram_proto_rawDescGZIP(), []int{24}
+	return file_proto_gibram_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *ComputeCommunitiesResponse) GetCount() int32 {
@@ -2034,7 +2034,7 @@ type LinkTextUnitEntityRequest struct {
 
 func (x *LinkTextUnitEntityRequest) Reset() {
 	*x = LinkTextUnitEntityRequest{}
-	mi := &file_gibram_proto_msgTypes[25]
+	mi := &file_proto_gibram_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2046,7 +2046,7 @@ func (x *LinkTextUnitEntityRequest) String() string {
 func (*LinkTextUnitEntityRequest) ProtoMessage() {}
 
 func (x *LinkTextUnitEntityRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gibram_proto_msgTypes[25]
+	mi := &file_proto_gibram_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2059,7 +2059,7 @@ func (x *LinkTextUnitEntityRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LinkTextUnitEntityRequest.ProtoReflect.Descriptor instead.
 func (*LinkTextUnitEntityRequest) Descriptor() ([]byte, []int) {
-	return file_gibram_proto_rawDescGZIP(), []int{25}
+	return file_proto_gibram_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *LinkTextUnitEntityRequest) GetTextunitId() uint64 {
@@ -2094,7 +2094,7 @@ type QueryRequest struct {
 
 func (x *QueryRequest) Reset() {
 	*x = QueryRequest{}
-	mi := &file_gibram_proto_msgTypes[26]
+	mi := &file_proto_gibram_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2106,7 +2106,7 @@ func (x *QueryRequest) String() string {
 func (*QueryRequest) ProtoMessage() {}
 
 func (x *QueryRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gibram_proto_msgTypes[26]
+	mi := &file_proto_gibram_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2119,7 +2119,7 @@ func (x *QueryRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use QueryRequest.ProtoReflect.Descriptor instead.
 func (*QueryRequest) Descriptor() ([]byte, []int) {
-	return file_gibram_proto_rawDescGZIP(), []int{26}
+	return file_proto_gibram_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *QueryRequest) GetQueryVector() []float32 {
@@ -2203,7 +2203,7 @@ type TextUnitResult struct {
 
 func (x *TextUnitResult) Reset() {
 	*x = TextUnitResult{}
-	mi := &file_gibram_proto_msgTypes[27]
+	mi := &file_proto_gibram_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2215,7 +2215,7 @@ func (x *TextUnitResult) String() string {
 func (*TextUnitResult) ProtoMessage() {}
 
 func (x *TextUnitResult) ProtoReflect() protoreflect.Message {
-	mi := &file_gibram_proto_msgTypes[27]
+	mi := &file_proto_gibram_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2228,7 +2228,7 @@ func (x *TextUnitResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TextUnitResult.ProtoReflect.Descriptor instead.
 func (*TextUnitResult) Descriptor() ([]byte, []int) {
-	return file_gibram_proto_rawDescGZIP(), []int{27}
+	return file_proto_gibram_proto_rawDescGZIP(), []int{27}
 }
 
 func (x *TextUnitResult) GetTextunit() *TextUnit {
@@ -2263,7 +2263,7 @@ type EntityResult struct {
 
 func (x *EntityResult) Reset() {
 	*x = EntityResult{}
-	mi := &file_gibram_proto_msgTypes[28]
+	mi := &file_proto_gibram_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2275,7 +2275,7 @@ func (x *EntityResult) String() string {
 func (*EntityResult) ProtoMessage() {}
 
 func (x *EntityResult) ProtoReflect() protoreflect.Message {
-	mi := &file_gibram_proto_msgTypes[28]
+	mi := &file_proto_gibram_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2288,7 +2288,7 @@ func (x *EntityResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EntityResult.ProtoReflect.Descriptor instead.
 func (*EntityResult) Descriptor() ([]byte, []int) {
-	return file_gibram_proto_rawDescGZIP(), []int{28}
+	return file_proto_gibram_proto_rawDescGZIP(), []int{28}
 }
 
 func (x *EntityResult) GetEntity() *Entity {
@@ -2322,7 +2322,7 @@ type CommunityResult struct {
 
 func (x *CommunityResult) Reset() {
 	*x = CommunityResult{}
-	mi := &file_gibram_proto_msgTypes[29]
+	mi := &file_proto_gibram_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2334,7 +2334,7 @@ func (x *CommunityResult) String() string {
 func (*CommunityResult) ProtoMessage() {}
 
 func (x *CommunityResult) ProtoReflect() protoreflect.Message {
-	mi := &file_gibram_proto_msgTypes[29]
+	mi := &file_proto_gibram_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2347,7 +2347,7 @@ func (x *CommunityResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CommunityResult.ProtoReflect.Descriptor instead.
 func (*CommunityResult) Descriptor() ([]byte, []int) {
-	return file_gibram_proto_rawDescGZIP(), []int{29}
+	return file_proto_gibram_proto_rawDescGZIP(), []int{29}
 }
 
 func (x *CommunityResult) GetCommunity() *Community {
@@ -2375,7 +2375,7 @@ type RelationshipResult struct {
 
 func (x *RelationshipResult) Reset() {
 	*x = RelationshipResult{}
-	mi := &file_gibram_proto_msgTypes[30]
+	mi := &file_proto_gibram_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2387,7 +2387,7 @@ func (x *RelationshipResult) String() string {
 func (*RelationshipResult) ProtoMessage() {}
 
 func (x *RelationshipResult) ProtoReflect() protoreflect.Message {
-	mi := &file_gibram_proto_msgTypes[30]
+	mi := &file_proto_gibram_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2400,7 +2400,7 @@ func (x *RelationshipResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RelationshipResult.ProtoReflect.Descriptor instead.
 func (*RelationshipResult) Descriptor() ([]byte, []int) {
-	return file_gibram_proto_rawDescGZIP(), []int{30}
+	return file_proto_gibram_proto_rawDescGZIP(), []int{30}
 }
 
 func (x *RelationshipResult) GetRelationship() *Relationship {
@@ -2435,7 +2435,7 @@ type QueryStats struct {
 
 func (x *QueryStats) Reset() {
 	*x = QueryStats{}
-	mi := &file_gibram_proto_msgTypes[31]
+	mi := &file_proto_gibram_proto_msgTypes[31]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2447,7 +2447,7 @@ func (x *QueryStats) String() string {
 func (*QueryStats) ProtoMessage() {}
 
 func (x *QueryStats) ProtoReflect() protoreflect.Message {
-	mi := &file_gibram_proto_msgTypes[31]
+	mi := &file_proto_gibram_proto_msgTypes[31]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2460,7 +2460,7 @@ func (x *QueryStats) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use QueryStats.ProtoReflect.Descriptor instead.
 func (*QueryStats) Descriptor() ([]byte, []int) {
-	return file_gibram_proto_rawDescGZIP(), []int{31}
+	return file_proto_gibram_proto_rawDescGZIP(), []int{31}
 }
 
 func (x *QueryStats) GetDurationMicros() int64 {
@@ -2498,7 +2498,7 @@ type QueryResponse struct {
 
 func (x *QueryResponse) Reset() {
 	*x = QueryResponse{}
-	mi := &file_gibram_proto_msgTypes[32]
+	mi := &file_proto_gibram_proto_msgTypes[32]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2510,7 +2510,7 @@ func (x *QueryResponse) String() string {
 func (*QueryResponse) ProtoMessage() {}
 
 func (x *QueryResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_gibram_proto_msgTypes[32]
+	mi := &file_proto_gibram_proto_msgTypes[32]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2523,7 +2523,7 @@ func (x *QueryResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use QueryResponse.ProtoReflect.Descriptor instead.
 func (*QueryResponse) Descriptor() ([]byte, []int) {
-	return file_gibram_proto_rawDescGZIP(), []int{32}
+	return file_proto_gibram_proto_rawDescGZIP(), []int{32}
 }
 
 func (x *QueryResponse) GetQueryId() uint64 {
@@ -2577,7 +2577,7 @@ type ExplainRequest struct {
 
 func (x *ExplainRequest) Reset() {
 	*x = ExplainRequest{}
-	mi := &file_gibram_proto_msgTypes[33]
+	mi := &file_proto_gibram_proto_msgTypes[33]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2589,7 +2589,7 @@ func (x *ExplainRequest) String() string {
 func (*ExplainRequest) ProtoMessage() {}
 
 func (x *ExplainRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gibram_proto_msgTypes[33]
+	mi := &file_proto_gibram_proto_msgTypes[33]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2602,7 +2602,7 @@ func (x *ExplainRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExplainRequest.ProtoReflect.Descriptor instead.
 func (*ExplainRequest) Descriptor() ([]byte, []int) {
-	return file_gibram_proto_rawDescGZIP(), []int{33}
+	return file_proto_gibram_proto_rawDescGZIP(), []int{33}
 }
 
 func (x *ExplainRequest) GetQueryId() uint64 {
@@ -2624,7 +2624,7 @@ type SeedInfo struct {
 
 func (x *SeedInfo) Reset() {
 	*x = SeedInfo{}
-	mi := &file_gibram_proto_msgTypes[34]
+	mi := &file_proto_gibram_proto_msgTypes[34]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2636,7 +2636,7 @@ func (x *SeedInfo) String() string {
 func (*SeedInfo) ProtoMessage() {}
 
 func (x *SeedInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_gibram_proto_msgTypes[34]
+	mi := &file_proto_gibram_proto_msgTypes[34]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2649,7 +2649,7 @@ func (x *SeedInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SeedInfo.ProtoReflect.Descriptor instead.
 func (*SeedInfo) Descriptor() ([]byte, []int) {
-	return file_gibram_proto_rawDescGZIP(), []int{34}
+	return file_proto_gibram_proto_rawDescGZIP(), []int{34}
 }
 
 func (x *SeedInfo) GetType() string {
@@ -2694,7 +2694,7 @@ type TraversalStep struct {
 
 func (x *TraversalStep) Reset() {
 	*x = TraversalStep{}
-	mi := &file_gibram_proto_msgTypes[35]
+	mi := &file_proto_gibram_proto_msgTypes[35]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2706,7 +2706,7 @@ func (x *TraversalStep) String() string {
 func (*TraversalStep) ProtoMessage() {}
 
 func (x *TraversalStep) ProtoReflect() protoreflect.Message {
-	mi := &file_gibram_proto_msgTypes[35]
+	mi := &file_proto_gibram_proto_msgTypes[35]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2719,7 +2719,7 @@ func (x *TraversalStep) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TraversalStep.ProtoReflect.Descriptor instead.
 func (*TraversalStep) Descriptor() ([]byte, []int) {
-	return file_gibram_proto_rawDescGZIP(), []int{35}
+	return file_proto_gibram_proto_rawDescGZIP(), []int{35}
 }
 
 func (x *TraversalStep) GetFromEntityId() uint64 {
@@ -2775,7 +2775,7 @@ type ExplainResponse struct {
 
 func (x *ExplainResponse) Reset() {
 	*x = ExplainResponse{}
-	mi := &file_gibram_proto_msgTypes[36]
+	mi := &file_proto_gibram_proto_msgTypes[36]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2787,7 +2787,7 @@ func (x *ExplainResponse) String() string {
 func (*ExplainResponse) ProtoMessage() {}
 
 func (x *ExplainResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_gibram_proto_msgTypes[36]
+	mi := &file_proto_gibram_proto_msgTypes[36]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2800,7 +2800,7 @@ func (x *ExplainResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExplainResponse.ProtoReflect.Descriptor instead.
 func (*ExplainResponse) Descriptor() ([]byte, []int) {
-	return file_gibram_proto_rawDescGZIP(), []int{36}
+	return file_proto_gibram_proto_rawDescGZIP(), []int{36}
 }
 
 func (x *ExplainResponse) GetQueryId() uint64 {
@@ -2833,7 +2833,7 @@ type GetByIDRequest struct {
 
 func (x *GetByIDRequest) Reset() {
 	*x = GetByIDRequest{}
-	mi := &file_gibram_proto_msgTypes[37]
+	mi := &file_proto_gibram_proto_msgTypes[37]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2845,7 +2845,7 @@ func (x *GetByIDRequest) String() string {
 func (*GetByIDRequest) ProtoMessage() {}
 
 func (x *GetByIDRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gibram_proto_msgTypes[37]
+	mi := &file_proto_gibram_proto_msgTypes[37]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2858,7 +2858,7 @@ func (x *GetByIDRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetByIDRequest.ProtoReflect.Descriptor instead.
 func (*GetByIDRequest) Descriptor() ([]byte, []int) {
-	return file_gibram_proto_rawDescGZIP(), []int{37}
+	return file_proto_gibram_proto_rawDescGZIP(), []int{37}
 }
 
 func (x *GetByIDRequest) GetId() uint64 {
@@ -2877,7 +2877,7 @@ type DeleteByIDRequest struct {
 
 func (x *DeleteByIDRequest) Reset() {
 	*x = DeleteByIDRequest{}
-	mi := &file_gibram_proto_msgTypes[38]
+	mi := &file_proto_gibram_proto_msgTypes[38]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2889,7 +2889,7 @@ func (x *DeleteByIDRequest) String() string {
 func (*DeleteByIDRequest) ProtoMessage() {}
 
 func (x *DeleteByIDRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gibram_proto_msgTypes[38]
+	mi := &file_proto_gibram_proto_msgTypes[38]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2902,7 +2902,7 @@ func (x *DeleteByIDRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteByIDRequest.ProtoReflect.Descriptor instead.
 func (*DeleteByIDRequest) Descriptor() ([]byte, []int) {
-	return file_gibram_proto_rawDescGZIP(), []int{38}
+	return file_proto_gibram_proto_rawDescGZIP(), []int{38}
 }
 
 func (x *DeleteByIDRequest) GetId() uint64 {
@@ -2922,7 +2922,7 @@ type HealthResponse struct {
 
 func (x *HealthResponse) Reset() {
 	*x = HealthResponse{}
-	mi := &file_gibram_proto_msgTypes[39]
+	mi := &file_proto_gibram_proto_msgTypes[39]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2934,7 +2934,7 @@ func (x *HealthResponse) String() string {
 func (*HealthResponse) ProtoMessage() {}
 
 func (x *HealthResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_gibram_proto_msgTypes[39]
+	mi := &file_proto_gibram_proto_msgTypes[39]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2947,7 +2947,7 @@ func (x *HealthResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HealthResponse.ProtoReflect.Descriptor instead.
 func (*HealthResponse) Descriptor() ([]byte, []int) {
-	return file_gibram_proto_rawDescGZIP(), []int{39}
+	return file_proto_gibram_proto_rawDescGZIP(), []int{39}
 }
 
 func (x *HealthResponse) GetStatus() string {
@@ -2973,7 +2973,7 @@ type MSetEntitiesRequest struct {
 
 func (x *MSetEntitiesRequest) Reset() {
 	*x = MSetEntitiesRequest{}
-	mi := &file_gibram_proto_msgTypes[40]
+	mi := &file_proto_gibram_proto_msgTypes[40]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2985,7 +2985,7 @@ func (x *MSetEntitiesRequest) String() string {
 func (*MSetEntitiesRequest) ProtoMessage() {}
 
 func (x *MSetEntitiesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gibram_proto_msgTypes[40]
+	mi := &file_proto_gibram_proto_msgTypes[40]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2998,7 +2998,7 @@ func (x *MSetEntitiesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MSetEntitiesRequest.ProtoReflect.Descriptor instead.
 func (*MSetEntitiesRequest) Descriptor() ([]byte, []int) {
-	return file_gibram_proto_rawDescGZIP(), []int{40}
+	return file_proto_gibram_proto_rawDescGZIP(), []int{40}
 }
 
 func (x *MSetEntitiesRequest) GetEntities() []*AddEntityRequest {
@@ -3017,7 +3017,7 @@ type MGetEntitiesRequest struct {
 
 func (x *MGetEntitiesRequest) Reset() {
 	*x = MGetEntitiesRequest{}
-	mi := &file_gibram_proto_msgTypes[41]
+	mi := &file_proto_gibram_proto_msgTypes[41]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3029,7 +3029,7 @@ func (x *MGetEntitiesRequest) String() string {
 func (*MGetEntitiesRequest) ProtoMessage() {}
 
 func (x *MGetEntitiesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gibram_proto_msgTypes[41]
+	mi := &file_proto_gibram_proto_msgTypes[41]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3042,7 +3042,7 @@ func (x *MGetEntitiesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MGetEntitiesRequest.ProtoReflect.Descriptor instead.
 func (*MGetEntitiesRequest) Descriptor() ([]byte, []int) {
-	return file_gibram_proto_rawDescGZIP(), []int{41}
+	return file_proto_gibram_proto_rawDescGZIP(), []int{41}
 }
 
 func (x *MGetEntitiesRequest) GetIds() []uint64 {
@@ -3062,7 +3062,7 @@ type EntitiesResponse struct {
 
 func (x *EntitiesResponse) Reset() {
 	*x = EntitiesResponse{}
-	mi := &file_gibram_proto_msgTypes[42]
+	mi := &file_proto_gibram_proto_msgTypes[42]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3074,7 +3074,7 @@ func (x *EntitiesResponse) String() string {
 func (*EntitiesResponse) ProtoMessage() {}
 
 func (x *EntitiesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_gibram_proto_msgTypes[42]
+	mi := &file_proto_gibram_proto_msgTypes[42]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3087,7 +3087,7 @@ func (x *EntitiesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EntitiesResponse.ProtoReflect.Descriptor instead.
 func (*EntitiesResponse) Descriptor() ([]byte, []int) {
-	return file_gibram_proto_rawDescGZIP(), []int{42}
+	return file_proto_gibram_proto_rawDescGZIP(), []int{42}
 }
 
 func (x *EntitiesResponse) GetEntities() []*Entity {
@@ -3113,7 +3113,7 @@ type MSetDocumentsRequest struct {
 
 func (x *MSetDocumentsRequest) Reset() {
 	*x = MSetDocumentsRequest{}
-	mi := &file_gibram_proto_msgTypes[43]
+	mi := &file_proto_gibram_proto_msgTypes[43]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3125,7 +3125,7 @@ func (x *MSetDocumentsRequest) String() string {
 func (*MSetDocumentsRequest) ProtoMessage() {}
 
 func (x *MSetDocumentsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gibram_proto_msgTypes[43]
+	mi := &file_proto_gibram_proto_msgTypes[43]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3138,7 +3138,7 @@ func (x *MSetDocumentsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MSetDocumentsRequest.ProtoReflect.Descriptor instead.
 func (*MSetDocumentsRequest) Descriptor() ([]byte, []int) {
-	return file_gibram_proto_rawDescGZIP(), []int{43}
+	return file_proto_gibram_proto_rawDescGZIP(), []int{43}
 }
 
 func (x *MSetDocumentsRequest) GetDocuments() []*AddDocumentRequest {
@@ -3157,7 +3157,7 @@ type MGetDocumentsRequest struct {
 
 func (x *MGetDocumentsRequest) Reset() {
 	*x = MGetDocumentsRequest{}
-	mi := &file_gibram_proto_msgTypes[44]
+	mi := &file_proto_gibram_proto_msgTypes[44]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3169,7 +3169,7 @@ func (x *MGetDocumentsRequest) String() string {
 func (*MGetDocumentsRequest) ProtoMessage() {}
 
 func (x *MGetDocumentsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gibram_proto_msgTypes[44]
+	mi := &file_proto_gibram_proto_msgTypes[44]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3182,7 +3182,7 @@ func (x *MGetDocumentsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MGetDocumentsRequest.ProtoReflect.Descriptor instead.
 func (*MGetDocumentsRequest) Descriptor() ([]byte, []int) {
-	return file_gibram_proto_rawDescGZIP(), []int{44}
+	return file_proto_gibram_proto_rawDescGZIP(), []int{44}
 }
 
 func (x *MGetDocumentsRequest) GetIds() []uint64 {
@@ -3202,7 +3202,7 @@ type DocumentsResponse struct {
 
 func (x *DocumentsResponse) Reset() {
 	*x = DocumentsResponse{}
-	mi := &file_gibram_proto_msgTypes[45]
+	mi := &file_proto_gibram_proto_msgTypes[45]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3214,7 +3214,7 @@ func (x *DocumentsResponse) String() string {
 func (*DocumentsResponse) ProtoMessage() {}
 
 func (x *DocumentsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_gibram_proto_msgTypes[45]
+	mi := &file_proto_gibram_proto_msgTypes[45]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3227,7 +3227,7 @@ func (x *DocumentsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DocumentsResponse.ProtoReflect.Descriptor instead.
 func (*DocumentsResponse) Descriptor() ([]byte, []int) {
-	return file_gibram_proto_rawDescGZIP(), []int{45}
+	return file_proto_gibram_proto_rawDescGZIP(), []int{45}
 }
 
 func (x *DocumentsResponse) GetDocuments() []*Document {
@@ -3253,7 +3253,7 @@ type MSetTextUnitsRequest struct {
 
 func (x *MSetTextUnitsRequest) Reset() {
 	*x = MSetTextUnitsRequest{}
-	mi := &file_gibram_proto_msgTypes[46]
+	mi := &file_proto_gibram_proto_msgTypes[46]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3265,7 +3265,7 @@ func (x *MSetTextUnitsRequest) String() string {
 func (*MSetTextUnitsRequest) ProtoMessage() {}
 
 func (x *MSetTextUnitsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gibram_proto_msgTypes[46]
+	mi := &file_proto_gibram_proto_msgTypes[46]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3278,7 +3278,7 @@ func (x *MSetTextUnitsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MSetTextUnitsRequest.ProtoReflect.Descriptor instead.
 func (*MSetTextUnitsRequest) Descriptor() ([]byte, []int) {
-	return file_gibram_proto_rawDescGZIP(), []int{46}
+	return file_proto_gibram_proto_rawDescGZIP(), []int{46}
 }
 
 func (x *MSetTextUnitsRequest) GetTextunits() []*AddTextUnitRequest {
@@ -3297,7 +3297,7 @@ type MGetTextUnitsRequest struct {
 
 func (x *MGetTextUnitsRequest) Reset() {
 	*x = MGetTextUnitsRequest{}
-	mi := &file_gibram_proto_msgTypes[47]
+	mi := &file_proto_gibram_proto_msgTypes[47]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3309,7 +3309,7 @@ func (x *MGetTextUnitsRequest) String() string {
 func (*MGetTextUnitsRequest) ProtoMessage() {}
 
 func (x *MGetTextUnitsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gibram_proto_msgTypes[47]
+	mi := &file_proto_gibram_proto_msgTypes[47]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3322,7 +3322,7 @@ func (x *MGetTextUnitsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MGetTextUnitsRequest.ProtoReflect.Descriptor instead.
 func (*MGetTextUnitsRequest) Descriptor() ([]byte, []int) {
-	return file_gibram_proto_rawDescGZIP(), []int{47}
+	return file_proto_gibram_proto_rawDescGZIP(), []int{47}
 }
 
 func (x *MGetTextUnitsRequest) GetIds() []uint64 {
@@ -3342,7 +3342,7 @@ type TextUnitsResponse struct {
 
 func (x *TextUnitsResponse) Reset() {
 	*x = TextUnitsResponse{}
-	mi := &file_gibram_proto_msgTypes[48]
+	mi := &file_proto_gibram_proto_msgTypes[48]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3354,7 +3354,7 @@ func (x *TextUnitsResponse) String() string {
 func (*TextUnitsResponse) ProtoMessage() {}
 
 func (x *TextUnitsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_gibram_proto_msgTypes[48]
+	mi := &file_proto_gibram_proto_msgTypes[48]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3367,7 +3367,7 @@ func (x *TextUnitsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TextUnitsResponse.ProtoReflect.Descriptor instead.
 func (*TextUnitsResponse) Descriptor() ([]byte, []int) {
-	return file_gibram_proto_rawDescGZIP(), []int{48}
+	return file_proto_gibram_proto_rawDescGZIP(), []int{48}
 }
 
 func (x *TextUnitsResponse) GetTextunits() []*TextUnit {
@@ -3393,7 +3393,7 @@ type MSetRelationshipsRequest struct {
 
 func (x *MSetRelationshipsRequest) Reset() {
 	*x = MSetRelationshipsRequest{}
-	mi := &file_gibram_proto_msgTypes[49]
+	mi := &file_proto_gibram_proto_msgTypes[49]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3405,7 +3405,7 @@ func (x *MSetRelationshipsRequest) String() string {
 func (*MSetRelationshipsRequest) ProtoMessage() {}
 
 func (x *MSetRelationshipsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gibram_proto_msgTypes[49]
+	mi := &file_proto_gibram_proto_msgTypes[49]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3418,7 +3418,7 @@ func (x *MSetRelationshipsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MSetRelationshipsRequest.ProtoReflect.Descriptor instead.
 func (*MSetRelationshipsRequest) Descriptor() ([]byte, []int) {
-	return file_gibram_proto_rawDescGZIP(), []int{49}
+	return file_proto_gibram_proto_rawDescGZIP(), []int{49}
 }
 
 func (x *MSetRelationshipsRequest) GetRelationships() []*AddRelationshipRequest {
@@ -3437,7 +3437,7 @@ type MGetRelationshipsRequest struct {
 
 func (x *MGetRelationshipsRequest) Reset() {
 	*x = MGetRelationshipsRequest{}
-	mi := &file_gibram_proto_msgTypes[50]
+	mi := &file_proto_gibram_proto_msgTypes[50]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3449,7 +3449,7 @@ func (x *MGetRelationshipsRequest) String() string {
 func (*MGetRelationshipsRequest) ProtoMessage() {}
 
 func (x *MGetRelationshipsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gibram_proto_msgTypes[50]
+	mi := &file_proto_gibram_proto_msgTypes[50]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3462,7 +3462,7 @@ func (x *MGetRelationshipsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MGetRelationshipsRequest.ProtoReflect.Descriptor instead.
 func (*MGetRelationshipsRequest) Descriptor() ([]byte, []int) {
-	return file_gibram_proto_rawDescGZIP(), []int{50}
+	return file_proto_gibram_proto_rawDescGZIP(), []int{50}
 }
 
 func (x *MGetRelationshipsRequest) GetIds() []uint64 {
@@ -3482,7 +3482,7 @@ type RelationshipsResponse struct {
 
 func (x *RelationshipsResponse) Reset() {
 	*x = RelationshipsResponse{}
-	mi := &file_gibram_proto_msgTypes[51]
+	mi := &file_proto_gibram_proto_msgTypes[51]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3494,7 +3494,7 @@ func (x *RelationshipsResponse) String() string {
 func (*RelationshipsResponse) ProtoMessage() {}
 
 func (x *RelationshipsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_gibram_proto_msgTypes[51]
+	mi := &file_proto_gibram_proto_msgTypes[51]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3507,7 +3507,7 @@ func (x *RelationshipsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RelationshipsResponse.ProtoReflect.Descriptor instead.
 func (*RelationshipsResponse) Descriptor() ([]byte, []int) {
-	return file_gibram_proto_rawDescGZIP(), []int{51}
+	return file_proto_gibram_proto_rawDescGZIP(), []int{51}
 }
 
 func (x *RelationshipsResponse) GetRelationships() []*Relationship {
@@ -3533,7 +3533,7 @@ type PipelineRequest struct {
 
 func (x *PipelineRequest) Reset() {
 	*x = PipelineRequest{}
-	mi := &file_gibram_proto_msgTypes[52]
+	mi := &file_proto_gibram_proto_msgTypes[52]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3545,7 +3545,7 @@ func (x *PipelineRequest) String() string {
 func (*PipelineRequest) ProtoMessage() {}
 
 func (x *PipelineRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gibram_proto_msgTypes[52]
+	mi := &file_proto_gibram_proto_msgTypes[52]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3558,7 +3558,7 @@ func (x *PipelineRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PipelineRequest.ProtoReflect.Descriptor instead.
 func (*PipelineRequest) Descriptor() ([]byte, []int) {
-	return file_gibram_proto_rawDescGZIP(), []int{52}
+	return file_proto_gibram_proto_rawDescGZIP(), []int{52}
 }
 
 func (x *PipelineRequest) GetCommands() []*Envelope {
@@ -3577,7 +3577,7 @@ type PipelineResponse struct {
 
 func (x *PipelineResponse) Reset() {
 	*x = PipelineResponse{}
-	mi := &file_gibram_proto_msgTypes[53]
+	mi := &file_proto_gibram_proto_msgTypes[53]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3589,7 +3589,7 @@ func (x *PipelineResponse) String() string {
 func (*PipelineResponse) ProtoMessage() {}
 
 func (x *PipelineResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_gibram_proto_msgTypes[53]
+	mi := &file_proto_gibram_proto_msgTypes[53]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3602,7 +3602,7 @@ func (x *PipelineResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PipelineResponse.ProtoReflect.Descriptor instead.
 func (*PipelineResponse) Descriptor() ([]byte, []int) {
-	return file_gibram_proto_rawDescGZIP(), []int{53}
+	return file_proto_gibram_proto_rawDescGZIP(), []int{53}
 }
 
 func (x *PipelineResponse) GetResponses() []*Envelope {
@@ -3622,7 +3622,7 @@ type HierarchicalLeidenRequest struct {
 
 func (x *HierarchicalLeidenRequest) Reset() {
 	*x = HierarchicalLeidenRequest{}
-	mi := &file_gibram_proto_msgTypes[54]
+	mi := &file_proto_gibram_proto_msgTypes[54]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3634,7 +3634,7 @@ func (x *HierarchicalLeidenRequest) String() string {
 func (*HierarchicalLeidenRequest) ProtoMessage() {}
 
 func (x *HierarchicalLeidenRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gibram_proto_msgTypes[54]
+	mi := &file_proto_gibram_proto_msgTypes[54]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3647,7 +3647,7 @@ func (x *HierarchicalLeidenRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HierarchicalLeidenRequest.ProtoReflect.Descriptor instead.
 func (*HierarchicalLeidenRequest) Descriptor() ([]byte, []int) {
-	return file_gibram_proto_rawDescGZIP(), []int{54}
+	return file_proto_gibram_proto_rawDescGZIP(), []int{54}
 }
 
 func (x *HierarchicalLeidenRequest) GetMaxLevels() int32 {
@@ -3674,7 +3674,7 @@ type HierarchicalLeidenResponse struct {
 
 func (x *HierarchicalLeidenResponse) Reset() {
 	*x = HierarchicalLeidenResponse{}
-	mi := &file_gibram_proto_msgTypes[55]
+	mi := &file_proto_gibram_proto_msgTypes[55]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3686,7 +3686,7 @@ func (x *HierarchicalLeidenResponse) String() string {
 func (*HierarchicalLeidenResponse) ProtoMessage() {}
 
 func (x *HierarchicalLeidenResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_gibram_proto_msgTypes[55]
+	mi := &file_proto_gibram_proto_msgTypes[55]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3699,7 +3699,7 @@ func (x *HierarchicalLeidenResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HierarchicalLeidenResponse.ProtoReflect.Descriptor instead.
 func (*HierarchicalLeidenResponse) Descriptor() ([]byte, []int) {
-	return file_gibram_proto_rawDescGZIP(), []int{55}
+	return file_proto_gibram_proto_rawDescGZIP(), []int{55}
 }
 
 func (x *HierarchicalLeidenResponse) GetLevelCounts() map[int32]int32 {
@@ -3725,7 +3725,7 @@ type SaveRequest struct {
 
 func (x *SaveRequest) Reset() {
 	*x = SaveRequest{}
-	mi := &file_gibram_proto_msgTypes[56]
+	mi := &file_proto_gibram_proto_msgTypes[56]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3737,7 +3737,7 @@ func (x *SaveRequest) String() string {
 func (*SaveRequest) ProtoMessage() {}
 
 func (x *SaveRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gibram_proto_msgTypes[56]
+	mi := &file_proto_gibram_proto_msgTypes[56]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3750,7 +3750,7 @@ func (x *SaveRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SaveRequest.ProtoReflect.Descriptor instead.
 func (*SaveRequest) Descriptor() ([]byte, []int) {
-	return file_gibram_proto_rawDescGZIP(), []int{56}
+	return file_proto_gibram_proto_rawDescGZIP(), []int{56}
 }
 
 func (x *SaveRequest) GetPath() string {
@@ -3769,7 +3769,7 @@ type RestoreRequest struct {
 
 func (x *RestoreRequest) Reset() {
 	*x = RestoreRequest{}
-	mi := &file_gibram_proto_msgTypes[57]
+	mi := &file_proto_gibram_proto_msgTypes[57]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3781,7 +3781,7 @@ func (x *RestoreRequest) String() string {
 func (*RestoreRequest) ProtoMessage() {}
 
 func (x *RestoreRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gibram_proto_msgTypes[57]
+	mi := &file_proto_gibram_proto_msgTypes[57]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3794,7 +3794,7 @@ func (x *RestoreRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RestoreRequest.ProtoReflect.Descriptor instead.
 func (*RestoreRequest) Descriptor() ([]byte, []int) {
-	return file_gibram_proto_rawDescGZIP(), []int{57}
+	return file_proto_gibram_proto_rawDescGZIP(), []int{57}
 }
 
 func (x *RestoreRequest) GetPath() string {
@@ -3819,7 +3819,7 @@ type BackupStatusResponse struct {
 
 func (x *BackupStatusResponse) Reset() {
 	*x = BackupStatusResponse{}
-	mi := &file_gibram_proto_msgTypes[58]
+	mi := &file_proto_gibram_proto_msgTypes[58]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3831,7 +3831,7 @@ func (x *BackupStatusResponse) String() string {
 func (*BackupStatusResponse) ProtoMessage() {}
 
 func (x *BackupStatusResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_gibram_proto_msgTypes[58]
+	mi := &file_proto_gibram_proto_msgTypes[58]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3844,7 +3844,7 @@ func (x *BackupStatusResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BackupStatusResponse.ProtoReflect.Descriptor instead.
 func (*BackupStatusResponse) Descriptor() ([]byte, []int) {
-	return file_gibram_proto_rawDescGZIP(), []int{58}
+	return file_proto_gibram_proto_rawDescGZIP(), []int{58}
 }
 
 func (x *BackupStatusResponse) GetInProgress() bool {
@@ -3906,7 +3906,7 @@ type LastSaveResponse struct {
 
 func (x *LastSaveResponse) Reset() {
 	*x = LastSaveResponse{}
-	mi := &file_gibram_proto_msgTypes[59]
+	mi := &file_proto_gibram_proto_msgTypes[59]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3918,7 +3918,7 @@ func (x *LastSaveResponse) String() string {
 func (*LastSaveResponse) ProtoMessage() {}
 
 func (x *LastSaveResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_gibram_proto_msgTypes[59]
+	mi := &file_proto_gibram_proto_msgTypes[59]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3931,7 +3931,7 @@ func (x *LastSaveResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LastSaveResponse.ProtoReflect.Descriptor instead.
 func (*LastSaveResponse) Descriptor() ([]byte, []int) {
-	return file_gibram_proto_rawDescGZIP(), []int{59}
+	return file_proto_gibram_proto_rawDescGZIP(), []int{59}
 }
 
 func (x *LastSaveResponse) GetTimestamp() int64 {
@@ -3960,7 +3960,7 @@ type WALStatusResponse struct {
 
 func (x *WALStatusResponse) Reset() {
 	*x = WALStatusResponse{}
-	mi := &file_gibram_proto_msgTypes[60]
+	mi := &file_proto_gibram_proto_msgTypes[60]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3972,7 +3972,7 @@ func (x *WALStatusResponse) String() string {
 func (*WALStatusResponse) ProtoMessage() {}
 
 func (x *WALStatusResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_gibram_proto_msgTypes[60]
+	mi := &file_proto_gibram_proto_msgTypes[60]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3985,7 +3985,7 @@ func (x *WALStatusResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WALStatusResponse.ProtoReflect.Descriptor instead.
 func (*WALStatusResponse) Descriptor() ([]byte, []int) {
-	return file_gibram_proto_rawDescGZIP(), []int{60}
+	return file_proto_gibram_proto_rawDescGZIP(), []int{60}
 }
 
 func (x *WALStatusResponse) GetCurrentLsn() uint64 {
@@ -4025,7 +4025,7 @@ type WALTruncateRequest struct {
 
 func (x *WALTruncateRequest) Reset() {
 	*x = WALTruncateRequest{}
-	mi := &file_gibram_proto_msgTypes[61]
+	mi := &file_proto_gibram_proto_msgTypes[61]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4037,7 +4037,7 @@ func (x *WALTruncateRequest) String() string {
 func (*WALTruncateRequest) ProtoMessage() {}
 
 func (x *WALTruncateRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gibram_proto_msgTypes[61]
+	mi := &file_proto_gibram_proto_msgTypes[61]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4050,7 +4050,7 @@ func (x *WALTruncateRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WALTruncateRequest.ProtoReflect.Descriptor instead.
 func (*WALTruncateRequest) Descriptor() ([]byte, []int) {
-	return file_gibram_proto_rawDescGZIP(), []int{61}
+	return file_proto_gibram_proto_rawDescGZIP(), []int{61}
 }
 
 func (x *WALTruncateRequest) GetTargetLsn() uint64 {
@@ -4069,7 +4069,7 @@ type AuthRequest struct {
 
 func (x *AuthRequest) Reset() {
 	*x = AuthRequest{}
-	mi := &file_gibram_proto_msgTypes[62]
+	mi := &file_proto_gibram_proto_msgTypes[62]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4081,7 +4081,7 @@ func (x *AuthRequest) String() string {
 func (*AuthRequest) ProtoMessage() {}
 
 func (x *AuthRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gibram_proto_msgTypes[62]
+	mi := &file_proto_gibram_proto_msgTypes[62]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4094,7 +4094,7 @@ func (x *AuthRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AuthRequest.ProtoReflect.Descriptor instead.
 func (*AuthRequest) Descriptor() ([]byte, []int) {
-	return file_gibram_proto_rawDescGZIP(), []int{62}
+	return file_proto_gibram_proto_rawDescGZIP(), []int{62}
 }
 
 func (x *AuthRequest) GetApiKey() string {
@@ -4116,7 +4116,7 @@ type AuthResponse struct {
 
 func (x *AuthResponse) Reset() {
 	*x = AuthResponse{}
-	mi := &file_gibram_proto_msgTypes[63]
+	mi := &file_proto_gibram_proto_msgTypes[63]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4128,7 +4128,7 @@ func (x *AuthResponse) String() string {
 func (*AuthResponse) ProtoMessage() {}
 
 func (x *AuthResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_gibram_proto_msgTypes[63]
+	mi := &file_proto_gibram_proto_msgTypes[63]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4141,7 +4141,7 @@ func (x *AuthResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AuthResponse.ProtoReflect.Descriptor instead.
 func (*AuthResponse) Descriptor() ([]byte, []int) {
-	return file_gibram_proto_rawDescGZIP(), []int{63}
+	return file_proto_gibram_proto_rawDescGZIP(), []int{63}
 }
 
 func (x *AuthResponse) GetSuccess() bool {
@@ -4172,11 +4172,11 @@ func (x *AuthResponse) GetPermissions() []string {
 	return nil
 }
 
-var File_gibram_proto protoreflect.FileDescriptor
+var File_proto_gibram_proto protoreflect.FileDescriptor
 
-const file_gibram_proto_rawDesc = "" +
+const file_proto_gibram_proto_rawDesc = "" +
 	"\n" +
-	"\fgibram.proto\x12\tgibram.v1\"\xaf\x01\n" +
+	"\x12proto/gibram.proto\x12\tgibram.v1\"\xaf\x01\n" +
 	"\bEnvelope\x12\x18\n" +
 	"\aversion\x18\x01 \x01(\rR\aversion\x12\x1d\n" +
 	"\n" +
@@ -4585,23 +4585,23 @@ const file_gibram_proto_rawDesc = "" +
 	"\x0eCMD_WAL_STATUS\x10v\x12\x17\n" +
 	"\x13CMD_BACKUP_RESPONSE\x10w\x12\f\n" +
 	"\bCMD_AUTH\x10x\x12\x15\n" +
-	"\x11CMD_AUTH_RESPONSE\x10yB)Z'github.com/gibram-io/gibram/proto/gibrampbb\x06proto3"
+	"\x11CMD_AUTH_RESPONSE\x10yB,Z*github.com/gibram-io/gibram/proto/gibrampbb\x06proto3"
 
 var (
-	file_gibram_proto_rawDescOnce sync.Once
-	file_gibram_proto_rawDescData []byte
+	file_proto_gibram_proto_rawDescOnce sync.Once
+	file_proto_gibram_proto_rawDescData []byte
 )
 
-func file_gibram_proto_rawDescGZIP() []byte {
-	file_gibram_proto_rawDescOnce.Do(func() {
-		file_gibram_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_gibram_proto_rawDesc), len(file_gibram_proto_rawDesc)))
+func file_proto_gibram_proto_rawDescGZIP() []byte {
+	file_proto_gibram_proto_rawDescOnce.Do(func() {
+		file_proto_gibram_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_proto_gibram_proto_rawDesc), len(file_proto_gibram_proto_rawDesc)))
 	})
-	return file_gibram_proto_rawDescData
+	return file_proto_gibram_proto_rawDescData
 }
 
-var file_gibram_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_gibram_proto_msgTypes = make([]protoimpl.MessageInfo, 66)
-var file_gibram_proto_goTypes = []any{
+var file_proto_gibram_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_proto_gibram_proto_msgTypes = make([]protoimpl.MessageInfo, 66)
+var file_proto_gibram_proto_goTypes = []any{
 	(CommandType)(0),                   // 0: gibram.v1.CommandType
 	(*Envelope)(nil),                   // 1: gibram.v1.Envelope
 	(*Empty)(nil),                      // 2: gibram.v1.Empty
@@ -4670,7 +4670,7 @@ var file_gibram_proto_goTypes = []any{
 	nil,                                // 65: gibram.v1.HealthResponse.ComponentsEntry
 	nil,                                // 66: gibram.v1.HierarchicalLeidenResponse.LevelCountsEntry
 }
-var file_gibram_proto_depIdxs = []int32{
+var file_proto_gibram_proto_depIdxs = []int32{
 	0,  // 0: gibram.v1.Envelope.cmd_type:type_name -> gibram.v1.CommandType
 	6,  // 1: gibram.v1.ListSessionsResponse.sessions:type_name -> gibram.v1.SessionInfo
 	22, // 2: gibram.v1.ComputeCommunitiesResponse.communities:type_name -> gibram.v1.Community
@@ -4704,27 +4704,27 @@ var file_gibram_proto_depIdxs = []int32{
 	0,  // [0:26] is the sub-list for field type_name
 }
 
-func init() { file_gibram_proto_init() }
-func file_gibram_proto_init() {
-	if File_gibram_proto != nil {
+func init() { file_proto_gibram_proto_init() }
+func file_proto_gibram_proto_init() {
+	if File_proto_gibram_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_gibram_proto_rawDesc), len(file_gibram_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_gibram_proto_rawDesc), len(file_proto_gibram_proto_rawDesc)),
 			NumEnums:      1,
 			NumMessages:   66,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_gibram_proto_goTypes,
-		DependencyIndexes: file_gibram_proto_depIdxs,
-		EnumInfos:         file_gibram_proto_enumTypes,
-		MessageInfos:      file_gibram_proto_msgTypes,
+		GoTypes:           file_proto_gibram_proto_goTypes,
+		DependencyIndexes: file_proto_gibram_proto_depIdxs,
+		EnumInfos:         file_proto_gibram_proto_enumTypes,
+		MessageInfos:      file_proto_gibram_proto_msgTypes,
 	}.Build()
-	File_gibram_proto = out.File
-	file_gibram_proto_goTypes = nil
-	file_gibram_proto_depIdxs = nil
+	File_proto_gibram_proto = out.File
+	file_proto_gibram_proto_goTypes = nil
+	file_proto_gibram_proto_depIdxs = nil
 }
