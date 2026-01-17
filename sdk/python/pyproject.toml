@@ -1,0 +1,84 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gibram"
+version = "0.1.0"
+description = "GraphRAG-style Python SDK for GibRAM - Graph in-Buffer Retrieval & Associative Memory"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.8"
+authors = [
+    {name = "GibRAM Team", email = "support@gibram.io"}
+]
+maintainers = [
+    {name = "GibRAM Team", email = "support@gibram.io"}
+]
+keywords = [
+    "rag",
+    "graphrag",
+    "graph",
+    "knowledge-graph",
+    "vector-search",
+    "llm",
+    "ai",
+    "embeddings",
+    "entity-extraction",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Typing :: Typed",
+]
+dependencies = [
+    "protobuf>=3.20.0",
+    "openai>=1.0.0",
+    "tqdm>=4.65.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "black>=23.0.0",
+    "ruff>=0.1.0",
+]
+anthropic = [
+    "anthropic>=0.18.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/gibram-io/gibram"
+Documentation = "https://gibram.io/docs/python-sdk"
+Repository = "https://github.com/gibram-io/gibram"
+Issues = "https://github.com/gibram-io/gibram/issues"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["gibram*"]
+
+[tool.setuptools.package-data]
+gibram = ["py.typed"]
+
+[tool.black]
+line-length = 100
+target-version = ["py38"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py38"
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+testpaths = ["tests"]
