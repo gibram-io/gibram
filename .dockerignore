@@ -1,0 +1,55 @@
+# Git
+.git/
+.gitignore
+.github/
+
+# Build artifacts
+bin/
+*.tar.gz
+*.zip
+test-server
+gibram-server
+gibram-cli
+
+# Development
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Documentation (not needed in image)
+docs/
+LEARN.md
+VERSION_CHECKLIST.md
+*.md
+!README.md
+
+# Test files
+*_test.go
+testdata/
+
+# Runtime artifacts
+data/
+snapshots/
+wal/
+*.log
+*.pem
+
+# Scripts (not needed in runtime)
+scripts/
+
+# Examples
+examples/
+
+# Python SDK
+sdk/
+
+# Temporary files
+tmp/
+temp/
+
+# Docker files
+Dockerfile
+docker-compose.yml
+.dockerignore

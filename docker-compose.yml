@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  gibram:
+    image: gibramio/gibram:latest
+    container_name: gibram-server
+    restart: unless-stopped
+    
+    ports:
+      - "6161:6161"
+    
+    volumes:
+      # Config file (create config.yaml before running)
+      - ./config.yaml:/etc/gibram/config.yaml:ro
+      
+      # Data persistence
+      - gibram-data:/var/lib/gibram/data
+      
+      # TLS certificates (optional, for custom certs)
+      # - ./certs:/var/lib/gibram/certs:ro
+      
+      # Logs (optional)
+      - gibram-logs:/var/log/gibram
+    
+    environment:
+      # Override config with env vars (optional)
+      # - GIBRAM_LOG_LEVEL=info
+      # - GIBRAM_VECTOR_DIM=1536
+      TZ: UTC
+    
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "6161"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    
+    # Security options
+    security_opt:
+      - no-new-privileges:true
+    
+    # Resource limits (adjust based on your needs)
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+volumes:
+  gibram-data:
+    driver: local
+  gibram-logs:
+    driver: local
+
+networks:
+  default:
+    name: gibram-network
