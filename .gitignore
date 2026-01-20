@@ -48,6 +48,7 @@ build/
 .pytest_cache/
 venv/
 env/
+.venv/
 
 # Go
 vendor/

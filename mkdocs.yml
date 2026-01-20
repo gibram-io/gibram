@@ -1,0 +1,72 @@
+site_name: GibRAM Documentation
+site_description: Graph in-Buffer Retrieval & Associative Memory - In-memory knowledge graph server for RAG
+site_url: https://gibram-io.github.io/gibram/
+
+repo_name: gibram-io/gibram
+repo_url: https://github.com/gibram-io/gibram
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.tabbed:
+      alternate_style: true
+  - tables
+  - attr_list
+  - md_in_html
+
+nav:
+  - Home: index.md
+  - Getting Started:
+      - Run Server: getting-started/server.md
+      - Use Python SDK: getting-started/python-sdk.md
+  - Server:
+      - Configuration Basics: server/configuration-basics.md
+      - Troubleshooting: server/troubleshooting.md
+  - SDKs:
+      - Python:
+          - Overview: sdks/python/index.md
+          - Quickstart: sdks/python/quickstart.md
+
+plugins:
+  - search
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/gibram-io/gibram
