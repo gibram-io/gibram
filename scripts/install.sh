@@ -124,47 +124,58 @@ create_config() {
     fi
     
     info "Creating default config file..."
-    CONFIG_CONTENT="server:
-  host: \"0.0.0.0\"
-  port: 6161
-  max_connections: 1000
-  read_timeout: 30s
-  write_timeout: 30s
+    CONFIG_CONTENT="# GibRAM Configuration File
+# Graph in-Buffer Retrieval & Associative Memory
+# Copy from config.example.yaml and customize
+
+server:
+  addr: \":6161\"
+  data_dir: \"./data\"
+  vector_dim: 1536
 
 tls:
-  # PRODUCTION: Set cert_file and key_file, set auto_cert to false
-  # DEVELOPMENT: Keep auto_cert true (generates self-signed cert)
-  # Generate custom cert: sh <(curl -fsSL https://gibram.io/generate-cert.sh)
-  auto_cert: false
-  cert_file: \"\"
-  key_file: \"\"
+  # PRODUCTION: Use custom certificates
+  # Generate with: openssl req -x509 -newkey rsa:4096 -nodes \\
+  #   -keyout server.key -out server.crt -days 365 -subj \"/CN=yourdomain.com\"
+  cert_file: \"\"  # Path to certificate file
+  key_file: \"\"   # Path to private key file
+  
+  # DEVELOPMENT: Auto-generate self-signed certificate
+  auto_cert: true
+  
+  # INSECURE MODE (DEV ONLY): Start with --insecure flag to disable TLS
+  # gibram-server --insecure
 
-engine:
-  default_session_ttl: 3600
-  cleanup_interval: 60
-  max_sessions: 10000
+auth:
+  keys:
+    # Admin key - full access
+    - id: \"admin\"
+      key: \"gibram_admin_change_me_in_production\"
+      permissions: [\"admin\"]
+    
+    # Application key - read/write access
+    - id: \"app-service\"
+      key: \"gibram_app_change_me_in_production\"
+      permissions: [\"write\"]
+    
+    # Read-only key
+    - id: \"query-service\"
+      key: \"gibram_query_change_me_in_production\"
+      permissions: [\"read\"]
 
-vector:
-  dimensions: 1536
-  distance_metric: \"cosine\"
-  hnsw:
-    m: 16
-    ef_construction: 200
-    ef_search: 100
-
-graph:
-  leiden:
-    resolution: 1.0
-    iterations: 10
-    max_levels: 3
-
-backup:
-  wal_enabled: false
-  snapshot_enabled: false
+security:
+  max_frame_size: 4194304  # 4MB
+  rate_limit: 1000         # requests per second
+  rate_burst: 100
+  idle_timeout: 300s
+  unauth_timeout: 10s
+  max_conns_per_ip: 50
 
 logging:
-  level: \"info\"
-  format: \"text\"
+  level: \"info\"    # debug, info, warn, error
+  format: \"text\"   # json, text
+  output: \"stdout\" # stdout, file
+  file: \"\"         # log file path if output=file
 "
     
     if [ -w "$CONFIG_DIR" ]; then
