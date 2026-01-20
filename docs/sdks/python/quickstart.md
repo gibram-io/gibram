@@ -321,8 +321,10 @@ Sessions persist until:
 # Start server
 gibram-server --insecure
 
-# Verify
-curl http://localhost:6161  # Should not refuse
+# Verify with CLI client
+gibram-cli -h localhost:6161 -insecure true
+# Then type: PING
+# Expected: PONG (XXXms)
 ```
 
 ### "Dimension mismatch"
