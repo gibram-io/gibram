@@ -1807,7 +1807,9 @@ func (s *Server) handleBGSave(payload []byte) (pb.CommandType, []byte) {
 
 	var req pb.SaveRequest
 	if len(payload) > 0 {
-		proto.Unmarshal(payload, &req)
+		if err := proto.Unmarshal(payload, &req); err != nil {
+			return pb.CommandType_CMD_ERROR, s.errorPayload(err.Error())
+		}
 	}
 
 	// Default path if not specified
@@ -1843,7 +1845,9 @@ func (s *Server) handleSave(payload []byte) (pb.CommandType, []byte) {
 
 	var req pb.SaveRequest
 	if len(payload) > 0 {
-		proto.Unmarshal(payload, &req)
+		if err := proto.Unmarshal(payload, &req); err != nil {
+			return pb.CommandType_CMD_ERROR, s.errorPayload(err.Error())
+		}
 	}
 
 	// Default path if not specified

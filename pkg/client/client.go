@@ -149,8 +149,8 @@ func (p *ConnPool) createConn() (*pooledConn, error) {
 	}
 
 	pc := &pooledConn{
-		conn:     conn,
-		reader:   bufio.NewReader(conn),
+		conn:   conn,
+		reader: bufio.NewReader(conn),
 	}
 	pc.lastUsed.Store(time.Now().UnixNano())
 	pc.inUse.Store(true)
@@ -198,7 +198,9 @@ func (p *ConnPool) authenticateConn(pc *pooledConn) error {
 
 	if respEnv.CmdType == pb.CommandType_CMD_ERROR {
 		var errResp pb.Error
-		proto.Unmarshal(respEnv.Payload, &errResp)
+		if err := proto.Unmarshal(respEnv.Payload, &errResp); err != nil {
+			return fmt.Errorf("auth error: %w", err)
+		}
 		return fmt.Errorf("auth error: %s", errResp.Message)
 	}
 
@@ -216,6 +218,14 @@ func (p *ConnPool) authenticateConn(pc *pooledConn) error {
 	}
 
 	return nil
+}
+
+func decodeErrorPayload(payload []byte) (string, error) {
+	var errResp pb.Error
+	if err := proto.Unmarshal(payload, &errResp); err != nil {
+		return "", err
+	}
+	return errResp.Message, nil
 }
 
 // getConn gets a connection from the pool
@@ -512,9 +522,11 @@ func (c *Client) doSend(pc *pooledConn, cmdType pb.CommandType, payload proto.Me
 
 	// Check for error response
 	if resp.CmdType == pb.CommandType_CMD_ERROR {
-		var errResp pb.Error
-		proto.Unmarshal(resp.Payload, &errResp)
-		return nil, fmt.Errorf("server error: %s", errResp.Message)
+		msg, err := decodeErrorPayload(resp.Payload)
+		if err != nil {
+			return nil, fmt.Errorf("server error decode failed: %w", err)
+		}
+		return nil, fmt.Errorf("server error: %s", msg)
 	}
 
 	return resp, nil

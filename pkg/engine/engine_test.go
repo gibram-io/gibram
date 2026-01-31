@@ -93,7 +93,7 @@ func TestEngine_AddDocument_Duplicate(t *testing.T) {
 func TestEngine_GetDocument(t *testing.T) {
 	e := createTestEngine()
 
-	doc, _ := e.AddDocument(testSessionID, "ext-doc-1", "test.txt")
+	doc := mustAddDocument(t, e, testSessionID, "ext-doc-1", "test.txt")
 
 	retrieved, ok := e.GetDocument(testSessionID, doc.ID)
 	if !ok {
@@ -116,7 +116,7 @@ func TestEngine_GetDocument_NotFound(t *testing.T) {
 func TestEngine_UpdateDocumentStatus(t *testing.T) {
 	e := createTestEngine()
 
-	doc, _ := e.AddDocument(testSessionID, "ext-doc-1", "test.txt")
+	doc := mustAddDocument(t, e, testSessionID, "ext-doc-1", "test.txt")
 
 	success := e.UpdateDocumentStatus(testSessionID, doc.ID, types.DocStatusReady)
 	if !success {
@@ -145,13 +145,10 @@ func TestEngine_UpdateDocumentStatus_NotFound(t *testing.T) {
 func TestEngine_AddTextUnit(t *testing.T) {
 	e := createTestEngine()
 
-	doc, _ := e.AddDocument(testSessionID, "ext-doc-1", "test.txt")
+	doc := mustAddDocument(t, e, testSessionID, "ext-doc-1", "test.txt")
 
 	embedding := randomVector(testVectorDim)
-	tu, err := e.AddTextUnit(testSessionID, "ext-tu-1", doc.ID, "Test content", embedding, 10)
-	if err != nil {
-		t.Fatalf("AddTextUnit failed: %v", err)
-	}
+	tu := mustAddTextUnit(t, e, testSessionID, "ext-tu-1", doc.ID, "Test content", embedding, 10)
 
 	if tu.ID == 0 {
 		t.Error("TextUnit ID should not be 0")
@@ -170,7 +167,7 @@ func TestEngine_AddTextUnit(t *testing.T) {
 func TestEngine_AddTextUnit_Duplicate(t *testing.T) {
 	e := createTestEngine()
 
-	doc, _ := e.AddDocument(testSessionID, "ext-doc-1", "test.txt")
+	doc := mustAddDocument(t, e, testSessionID, "ext-doc-1", "test.txt")
 
 	embedding := randomVector(testVectorDim)
 	_, err := e.AddTextUnit(testSessionID, "ext-tu-1", doc.ID, "Content 1", embedding, 10)
@@ -187,9 +184,9 @@ func TestEngine_AddTextUnit_Duplicate(t *testing.T) {
 func TestEngine_GetTextUnit(t *testing.T) {
 	e := createTestEngine()
 
-	doc, _ := e.AddDocument(testSessionID, "ext-doc-1", "test.txt")
+	doc := mustAddDocument(t, e, testSessionID, "ext-doc-1", "test.txt")
 	embedding := randomVector(testVectorDim)
-	tu, _ := e.AddTextUnit(testSessionID, "ext-tu-1", doc.ID, "Test content", embedding, 10)
+	tu := mustAddTextUnit(t, e, testSessionID, "ext-tu-1", doc.ID, "Test content", embedding, 10)
 
 	retrieved, ok := e.GetTextUnit(testSessionID, tu.ID)
 	if !ok {
@@ -225,7 +222,7 @@ func TestEngine_GetEntity(t *testing.T) {
 	e := createTestEngine()
 
 	embedding := randomVector(testVectorDim)
-	ent, _ := e.AddEntity(testSessionID, "ext-ent-1", "Bank Indonesia", "organization", "Central bank", embedding)
+	ent := mustAddEntity(t, e, testSessionID, "ext-ent-1", "Bank Indonesia", "organization", "Central bank", embedding)
 
 	retrieved, ok := e.GetEntity(testSessionID, ent.ID)
 	if !ok {
@@ -241,7 +238,7 @@ func TestEngine_GetEntityByTitle(t *testing.T) {
 	e := createTestEngine()
 
 	embedding := randomVector(testVectorDim)
-	e.AddEntity(testSessionID, "ext-ent-1", "Bank Indonesia", "organization", "Central bank", embedding)
+	mustAddEntity(t, e, testSessionID, "ext-ent-1", "Bank Indonesia", "organization", "Central bank", embedding)
 
 	// Should find with different case
 	retrieved, ok := e.GetEntityByTitle(testSessionID, "bank indonesia")
@@ -257,7 +254,7 @@ func TestEngine_UpdateEntityDescription(t *testing.T) {
 	e := createTestEngine()
 
 	embedding := randomVector(testVectorDim)
-	ent, _ := e.AddEntity(testSessionID, "ext-ent-1", "Bank Indonesia", "organization", "Central bank", embedding)
+	ent := mustAddEntity(t, e, testSessionID, "ext-ent-1", "Bank Indonesia", "organization", "Central bank", embedding)
 
 	newEmbedding := randomVector(testVectorDim)
 	success := e.UpdateEntityDescription(testSessionID, ent.ID, "Updated description", newEmbedding)
@@ -279,8 +276,8 @@ func TestEngine_AddRelationship(t *testing.T) {
 	e := createTestEngine()
 
 	embedding := randomVector(testVectorDim)
-	ent1, _ := e.AddEntity(testSessionID, "ext-ent-1", "Entity 1", "test", "Desc 1", embedding)
-	ent2, _ := e.AddEntity(testSessionID, "ext-ent-2", "Entity 2", "test", "Desc 2", embedding)
+	ent1 := mustAddEntity(t, e, testSessionID, "ext-ent-1", "Entity 1", "test", "Desc 1", embedding)
+	ent2 := mustAddEntity(t, e, testSessionID, "ext-ent-2", "Entity 2", "test", "Desc 2", embedding)
 
 	rel, err := e.AddRelationship(testSessionID, "ext-rel-1", ent1.ID, ent2.ID, "RELATED_TO", "Relationship desc", 1.0)
 	if err != nil {
@@ -302,10 +299,10 @@ func TestEngine_GetRelationship(t *testing.T) {
 	e := createTestEngine()
 
 	embedding := randomVector(testVectorDim)
-	ent1, _ := e.AddEntity(testSessionID, "ext-ent-1", "Entity 1", "test", "Desc 1", embedding)
-	ent2, _ := e.AddEntity(testSessionID, "ext-ent-2", "Entity 2", "test", "Desc 2", embedding)
+	ent1 := mustAddEntity(t, e, testSessionID, "ext-ent-1", "Entity 1", "test", "Desc 1", embedding)
+	ent2 := mustAddEntity(t, e, testSessionID, "ext-ent-2", "Entity 2", "test", "Desc 2", embedding)
 
-	rel, _ := e.AddRelationship(testSessionID, "ext-rel-1", ent1.ID, ent2.ID, "RELATED_TO", "Desc", 1.0)
+	rel := mustAddRelationship(t, e, testSessionID, "ext-rel-1", ent1.ID, ent2.ID, "RELATED_TO", "Desc", 1.0)
 
 	retrieved, ok := e.GetRelationship(testSessionID, rel.ID)
 	if !ok {
@@ -320,10 +317,10 @@ func TestEngine_GetRelationshipByEntities(t *testing.T) {
 	e := createTestEngine()
 
 	embedding := randomVector(testVectorDim)
-	ent1, _ := e.AddEntity(testSessionID, "ext-ent-1", "Entity 1", "test", "Desc 1", embedding)
-	ent2, _ := e.AddEntity(testSessionID, "ext-ent-2", "Entity 2", "test", "Desc 2", embedding)
+	ent1 := mustAddEntity(t, e, testSessionID, "ext-ent-1", "Entity 1", "test", "Desc 1", embedding)
+	ent2 := mustAddEntity(t, e, testSessionID, "ext-ent-2", "Entity 2", "test", "Desc 2", embedding)
 
-	e.AddRelationship(testSessionID, "ext-rel-1", ent1.ID, ent2.ID, "RELATED_TO", "Desc", 1.0)
+	mustAddRelationship(t, e, testSessionID, "ext-rel-1", ent1.ID, ent2.ID, "RELATED_TO", "Desc", 1.0)
 
 	retrieved, ok := e.GetRelationshipByEntities(testSessionID, ent1.ID, ent2.ID)
 	if !ok {
@@ -381,9 +378,9 @@ func TestEngine_Query_Basic(t *testing.T) {
 	embedding1 := randomVector(testVectorDim)
 	embedding2 := randomVector(testVectorDim)
 
-	doc, _ := e.AddDocument(testSessionID, "ext-doc-1", "test.txt")
-	e.AddTextUnit(testSessionID, "ext-tu-1", doc.ID, "Test content 1", embedding1, 10)
-	e.AddEntity(testSessionID, "ext-ent-1", "Entity 1", "test", "Description 1", embedding1)
+	doc := mustAddDocument(t, e, testSessionID, "ext-doc-1", "test.txt")
+	mustAddTextUnit(t, e, testSessionID, "ext-tu-1", doc.ID, "Test content 1", embedding1, 10)
+	mustAddEntity(t, e, testSessionID, "ext-ent-1", "Entity 1", "test", "Description 1", embedding1)
 	e.AddCommunity(testSessionID, "ext-comm-1", "Community 1", "Summary", "Full", 0, []uint64{1}, []uint64{}, embedding2)
 
 	// Query
@@ -404,7 +401,7 @@ func TestEngine_Query_EmptyIndex(t *testing.T) {
 	e := createTestEngine()
 
 	// Add a document to ensure session exists (even though indices are empty)
-	e.AddDocument(testSessionID, "doc-1", "test.pdf")
+	mustAddDocument(t, e, testSessionID, "doc-1", "test.pdf")
 
 	spec := types.DefaultQuerySpec()
 	spec.QueryVector = randomVector(testVectorDim)
@@ -425,9 +422,9 @@ func TestEngine_Query_WithGraphExpansion(t *testing.T) {
 	// Setup: entities with relationships
 	embedding := randomVector(testVectorDim)
 
-	ent1, _ := e.AddEntity(testSessionID, "ext-ent-1", "Entity 1", "test", "Desc 1", embedding)
-	ent2, _ := e.AddEntity(testSessionID, "ext-ent-2", "Entity 2", "test", "Desc 2", randomVector(testVectorDim))
-	e.AddRelationship(testSessionID, "rel-1", ent1.ID, ent2.ID, "RELATED", "Desc", 1.0)
+	ent1 := mustAddEntity(t, e, testSessionID, "ext-ent-1", "Entity 1", "test", "Desc 1", embedding)
+	ent2 := mustAddEntity(t, e, testSessionID, "ext-ent-2", "Entity 2", "test", "Desc 2", randomVector(testVectorDim))
+	mustAddRelationship(t, e, testSessionID, "rel-1", ent1.ID, ent2.ID, "RELATED", "Desc", 1.0)
 
 	spec := types.DefaultQuerySpec()
 	spec.QueryVector = embedding
@@ -453,7 +450,7 @@ func TestEngine_Explain(t *testing.T) {
 	e := createTestEngine()
 
 	embedding := randomVector(testVectorDim)
-	e.AddEntity(testSessionID, "ext-ent-1", "Entity 1", "test", "Desc 1", embedding)
+	mustAddEntity(t, e, testSessionID, "ext-ent-1", "Entity 1", "test", "Desc 1", embedding)
 
 	spec := types.DefaultQuerySpec()
 	spec.QueryVector = embedding
@@ -487,8 +484,8 @@ func TestEngine_Info(t *testing.T) {
 	e := createTestEngine()
 
 	embedding := randomVector(testVectorDim)
-	e.AddDocument(testSessionID, "ext-doc-1", "test.txt")
-	e.AddEntity(testSessionID, "ext-ent-1", "Entity 1", "test", "Desc 1", embedding)
+	mustAddDocument(t, e, testSessionID, "ext-doc-1", "test.txt")
+	mustAddEntity(t, e, testSessionID, "ext-ent-1", "Entity 1", "test", "Desc 1", embedding)
 
 	info := e.Info()
 
@@ -526,10 +523,10 @@ func TestEngine_Info(t *testing.T) {
 func TestEngine_LinkTextUnitToEntity(t *testing.T) {
 	e := createTestEngine()
 
-	doc, _ := e.AddDocument(testSessionID, "ext-doc-1", "test.txt")
+	doc := mustAddDocument(t, e, testSessionID, "ext-doc-1", "test.txt")
 	embedding := randomVector(testVectorDim)
-	tu, _ := e.AddTextUnit(testSessionID, "ext-tu-1", doc.ID, "Test content", embedding, 10)
-	ent, _ := e.AddEntity(testSessionID, "ext-ent-1", "Entity 1", "test", "Desc", embedding)
+	tu := mustAddTextUnit(t, e, testSessionID, "ext-tu-1", doc.ID, "Test content", embedding, 10)
+	ent := mustAddEntity(t, e, testSessionID, "ext-ent-1", "Entity 1", "test", "Desc", embedding)
 
 	success := e.LinkTextUnitToEntity(testSessionID, tu.ID, ent.ID)
 	if !success {
@@ -629,7 +626,7 @@ func TestEngine_ConcurrentAccess(t *testing.T) {
 		wg.Add(1)
 		go func(id int) {
 			defer wg.Done()
-			e.AddDocument(testSessionID, "doc-"+itoa(id), "file.txt")
+			mustAddDocument(t, e, testSessionID, "doc-"+itoa(id), "file.txt")
 		}(i)
 	}
 
@@ -639,7 +636,7 @@ func TestEngine_ConcurrentAccess(t *testing.T) {
 		wg.Add(1)
 		go func(id int) {
 			defer wg.Done()
-			e.AddEntity(testSessionID, "ent-"+itoa(id), "Entity "+itoa(id), "test", "Desc", embedding)
+			mustAddEntity(t, e, testSessionID, "ent-"+itoa(id), "Entity "+itoa(id), "test", "Desc", embedding)
 		}(i)
 	}
 
@@ -660,7 +657,7 @@ func TestEngine_ConcurrentQueries(t *testing.T) {
 	// Setup data
 	embedding := randomVector(testVectorDim)
 	for i := 0; i < 10; i++ {
-		e.AddEntity(testSessionID, "ent-"+itoa(i), "Entity "+itoa(i), "test", "Desc", embedding)
+		mustAddEntity(t, e, testSessionID, "ent-"+itoa(i), "Entity "+itoa(i), "test", "Desc", embedding)
 	}
 
 	var wg sync.WaitGroup
@@ -773,8 +770,8 @@ func TestEngine_AddRelationship_Duplicate(t *testing.T) {
 	e := createTestEngine()
 
 	embedding := randomVector(testVectorDim)
-	ent1, _ := e.AddEntity(testSessionID, "ext-ent-1", "Entity 1", "test", "Desc 1", embedding)
-	ent2, _ := e.AddEntity(testSessionID, "ext-ent-2", "Entity 2", "test", "Desc 2", embedding)
+	ent1 := mustAddEntity(t, e, testSessionID, "ext-ent-1", "Entity 1", "test", "Desc 1", embedding)
+	ent2 := mustAddEntity(t, e, testSessionID, "ext-ent-2", "Entity 2", "test", "Desc 2", embedding)
 
 	_, err := e.AddRelationship(testSessionID, "ext-rel-1", ent1.ID, ent2.ID, "RELATED_TO", "Desc", 1.0)
 	if err != nil {
@@ -816,10 +813,10 @@ func TestEngine_LinkTextUnitToEntity_NotFound(t *testing.T) {
 func TestEngine_SetTTL_AllTypes(t *testing.T) {
 	e := createTestEngine()
 
-	doc, _ := e.AddDocument(testSessionID, "ext-doc-1", "test.txt")
+	doc := mustAddDocument(t, e, testSessionID, "ext-doc-1", "test.txt")
 	embedding := randomVector(testVectorDim)
-	tu, _ := e.AddTextUnit(testSessionID, "ext-tu-1", doc.ID, "Content", embedding, 10)
-	ent, _ := e.AddEntity(testSessionID, "ext-ent-1", "Entity", "test", "Desc", embedding)
+	tu := mustAddTextUnit(t, e, testSessionID, "ext-tu-1", doc.ID, "Content", embedding, 10)
+	ent := mustAddEntity(t, e, testSessionID, "ext-ent-1", "Entity", "test", "Desc", embedding)
 	comm, _ := e.AddCommunity("ext-comm-1", "Comm", "Sum", "Full", 0, []uint64{}, []uint64{}, embedding, 0, 0)
 
 	tests := []struct {
@@ -851,10 +848,10 @@ func TestEngine_SetTTL_AllTypes(t *testing.T) {
 func TestEngine_SetIdleTTL_AllTypes(t *testing.T) {
 	e := createTestEngine()
 
-	doc, _ := e.AddDocument(testSessionID, "ext-doc-1", "test.txt")
+	doc := mustAddDocument(t, e, testSessionID, "ext-doc-1", "test.txt")
 	embedding := randomVector(testVectorDim)
-	tu, _ := e.AddTextUnit(testSessionID, "ext-tu-1", doc.ID, "Content", embedding, 10)
-	ent, _ := e.AddEntity(testSessionID, "ext-ent-1", "Entity", "test", "Desc", embedding)
+	tu := mustAddTextUnit(t, e, testSessionID, "ext-tu-1", doc.ID, "Content", embedding, 10)
+	ent := mustAddEntity(t, e, testSessionID, "ext-ent-1", "Entity", "test", "Desc", embedding)
 	comm, _ := e.AddCommunity("ext-comm-1", "Comm", "Sum", "Full", 0, []uint64{}, []uint64{}, embedding, 0, 0)
 
 	tests := []struct {
@@ -881,7 +878,7 @@ func TestEngine_SetIdleTTL_AllTypes(t *testing.T) {
 func TestEngine_GetTTL_InvalidType(t *testing.T) {
 	e := createTestEngine()
 
-	doc, _ := e.AddDocument(testSessionID, "ext-doc-1", "test.txt")
+	doc := mustAddDocument(t, e, testSessionID, "ext-doc-1", "test.txt")
 	e.SetTTL(types.ItemTypeDocument, doc.ID, 3600)
 
 	// Test with unknown item type - returns negative value
@@ -896,9 +893,9 @@ func TestEngine_Query_AllSearchTypes(t *testing.T) {
 	e := createTestEngine()
 
 	embedding := randomVector(testVectorDim)
-	doc, _ := e.AddDocument(testSessionID, "ext-doc-1", "test.txt")
-	e.AddTextUnit(testSessionID, "ext-tu-1", doc.ID, "Content", embedding, 10)
-	e.AddEntity(testSessionID, "ext-ent-1", "Entity", "test", "Desc", embedding)
+	doc := mustAddDocument(t, e, testSessionID, "ext-doc-1", "test.txt")
+	mustAddTextUnit(t, e, testSessionID, "ext-tu-1", doc.ID, "Content", embedding, 10)
+	mustAddEntity(t, e, testSessionID, "ext-ent-1", "Entity", "test", "Desc", embedding)
 	e.AddCommunity(testSessionID, "ext-comm-1", "Comm", "Summary", "Full", 0, []uint64{}, []uint64{}, embedding)
 
 	// Test each search type
@@ -929,9 +926,7 @@ func TestEngine_ListEntitiesPagination(t *testing.T) {
 	for i := 0; i < 5; i++ {
 		extID := fmt.Sprintf("ent-%d", i+1)
 		title := fmt.Sprintf("Entity %d", i+1)
-		if _, err := e.AddEntity(testSessionID, extID, title, "person", "desc", nil); err != nil {
-			t.Fatalf("AddEntity failed: %v", err)
-		}
+		mustAddEntity(t, e, testSessionID, extID, title, "person", "desc", nil)
 	}
 
 	entities, next := e.ListEntities(testSessionID, 0, 2)
@@ -965,19 +960,13 @@ func TestEngine_ListEntitiesPagination(t *testing.T) {
 func TestEngine_ListRelationshipsPagination(t *testing.T) {
 	e := createTestEngine()
 
-	e1, _ := e.AddEntity(testSessionID, "ent-001", "Entity 1", "person", "desc", nil)
-	e2, _ := e.AddEntity(testSessionID, "ent-002", "Entity 2", "person", "desc", nil)
-	e3, _ := e.AddEntity(testSessionID, "ent-003", "Entity 3", "person", "desc", nil)
+	e1 := mustAddEntity(t, e, testSessionID, "ent-001", "Entity 1", "person", "desc", nil)
+	e2 := mustAddEntity(t, e, testSessionID, "ent-002", "Entity 2", "person", "desc", nil)
+	e3 := mustAddEntity(t, e, testSessionID, "ent-003", "Entity 3", "person", "desc", nil)
 
-	if _, err := e.AddRelationship(testSessionID, "rel-001", e1.ID, e2.ID, "KNOWS", "desc", 1.0); err != nil {
-		t.Fatalf("AddRelationship failed: %v", err)
-	}
-	if _, err := e.AddRelationship(testSessionID, "rel-002", e2.ID, e3.ID, "KNOWS", "desc", 1.0); err != nil {
-		t.Fatalf("AddRelationship failed: %v", err)
-	}
-	if _, err := e.AddRelationship(testSessionID, "rel-003", e3.ID, e1.ID, "KNOWS", "desc", 1.0); err != nil {
-		t.Fatalf("AddRelationship failed: %v", err)
-	}
+	mustAddRelationship(t, e, testSessionID, "rel-001", e1.ID, e2.ID, "KNOWS", "desc", 1.0)
+	mustAddRelationship(t, e, testSessionID, "rel-002", e2.ID, e3.ID, "KNOWS", "desc", 1.0)
+	mustAddRelationship(t, e, testSessionID, "rel-003", e3.ID, e1.ID, "KNOWS", "desc", 1.0)
 
 	rels, next := e.ListRelationships(testSessionID, 0, 2)
 	if len(rels) != 2 {

@@ -76,8 +76,8 @@ func TestScenario_ChatWithPDF(t *testing.T) {
 	e.LinkTextUnitToEntity(testSessionID, textUnits[2].ID, entityList[2].ID) // DL chunk -> DL entity
 
 	// Add relationships between entities
-	e.AddRelationship(testSessionID, "rel-001", entityList[0].ID, entityList[1].ID, "USES", "ML uses neural networks", 0.9)
-	e.AddRelationship(testSessionID, "rel-002", entityList[2].ID, entityList[1].ID, "BASED_ON", "DL is based on neural networks", 0.95)
+	mustAddRelationship(t, e, testSessionID, "rel-001", entityList[0].ID, entityList[1].ID, "USES", "ML uses neural networks", 0.9)
+	mustAddRelationship(t, e, testSessionID, "rel-002", entityList[2].ID, entityList[1].ID, "BASED_ON", "DL is based on neural networks", 0.95)
 
 	// Mark document as ready
 	e.UpdateDocumentStatus(testSessionID, doc.ID, types.DocStatusReady)
@@ -136,17 +136,17 @@ func TestScenario_ResearchSession(t *testing.T) {
 
 	for i, paper := range papers {
 		// Add as document
-		doc, _ := e.AddDocument(testSessionID, "paper-"+itoa(i), paper+".pdf")
+		doc := mustAddDocument(t, e, testSessionID, "paper-"+itoa(i), paper+".pdf")
 
 		// Add key concepts as entities
 		embedding := generateSemanticVector(paper)
-		e.AddEntity(testSessionID, "concept-"+itoa(i), paper, "paper", "Research paper about "+paper, embedding)
+		mustAddEntity(t, e, testSessionID, "concept-"+itoa(i), paper, "paper", "Research paper about "+paper, embedding)
 
 		// Add chunks
 		for j := 0; j < 3; j++ {
 			chunkContent := "Section " + itoa(j) + " of " + paper
 			chunkEmbedding := generateSemanticVector(chunkContent)
-			e.AddTextUnit(testSessionID, "chunk-"+itoa(i)+"-"+itoa(j), doc.ID, chunkContent, chunkEmbedding, 50)
+			mustAddTextUnit(t, e, testSessionID, "chunk-"+itoa(i)+"-"+itoa(j), doc.ID, chunkContent, chunkEmbedding, 50)
 		}
 	}
 
@@ -199,16 +199,16 @@ func TestScenario_KnowledgeGraphNavigation(t *testing.T) {
 	entityMap := make(map[string]*types.Entity)
 	for _, ent := range entities {
 		embedding := generateSemanticVector(ent.desc)
-		entity, _ := e.AddEntity(testSessionID, ent.extID, ent.title, ent.entType, ent.desc, embedding)
+		entity := mustAddEntity(t, e, testSessionID, ent.extID, ent.title, ent.entType, ent.desc, embedding)
 		entityMap[ent.extID] = entity
 	}
 
 	// Build relationships
-	e.AddRelationship(testSessionID, "r1", entityMap["ceo"].ID, entityMap["company"].ID, "LEADS", "CEO leads company", 1.0)
-	e.AddRelationship(testSessionID, "r2", entityMap["cto"].ID, entityMap["company"].ID, "WORKS_AT", "CTO works at company", 0.9)
-	e.AddRelationship(testSessionID, "r3", entityMap["company"].ID, entityMap["product1"].ID, "PRODUCES", "Company produces product", 0.8)
-	e.AddRelationship(testSessionID, "r4", entityMap["company"].ID, entityMap["product2"].ID, "PRODUCES", "Company produces product", 0.8)
-	e.AddRelationship(testSessionID, "r5", entityMap["cto"].ID, entityMap["product2"].ID, "MANAGES", "CTO manages AI product", 0.7)
+	mustAddRelationship(t, e, testSessionID, "r1", entityMap["ceo"].ID, entityMap["company"].ID, "LEADS", "CEO leads company", 1.0)
+	mustAddRelationship(t, e, testSessionID, "r2", entityMap["cto"].ID, entityMap["company"].ID, "WORKS_AT", "CTO works at company", 0.9)
+	mustAddRelationship(t, e, testSessionID, "r3", entityMap["company"].ID, entityMap["product1"].ID, "PRODUCES", "Company produces product", 0.8)
+	mustAddRelationship(t, e, testSessionID, "r4", entityMap["company"].ID, entityMap["product2"].ID, "PRODUCES", "Company produces product", 0.8)
+	mustAddRelationship(t, e, testSessionID, "r5", entityMap["cto"].ID, entityMap["product2"].ID, "MANAGES", "CTO manages AI product", 0.7)
 
 	// Query starting from CEO, traverse to find related entities
 	queryVector := generateSemanticVector("John Smith CEO leadership")
@@ -255,25 +255,25 @@ func TestScenario_CommunityDetection(t *testing.T) {
 	embedding := randomVector(testVectorDim)
 
 	for i, concept := range mlConcepts {
-		ent, _ := e.AddEntity(testSessionID, "ml-"+itoa(i), concept, "concept", "ML: "+concept, embedding)
+		ent := mustAddEntity(t, e, testSessionID, "ml-"+itoa(i), concept, "concept", "ML: "+concept, embedding)
 		mlEntities = append(mlEntities, ent)
 	}
 
 	for i, concept := range dbConcepts {
-		ent, _ := e.AddEntity(testSessionID, "db-"+itoa(i), concept, "concept", "DB: "+concept, embedding)
+		ent := mustAddEntity(t, e, testSessionID, "db-"+itoa(i), concept, "concept", "DB: "+concept, embedding)
 		dbEntities = append(dbEntities, ent)
 	}
 
 	// Create dense connections within communities
 	for i := 0; i < len(mlEntities)-1; i++ {
-		e.AddRelationship(testSessionID, "ml-rel-"+itoa(i), mlEntities[i].ID, mlEntities[i+1].ID, "RELATED", "Related ML concepts", 1.0)
+		mustAddRelationship(t, e, testSessionID, "ml-rel-"+itoa(i), mlEntities[i].ID, mlEntities[i+1].ID, "RELATED", "Related ML concepts", 1.0)
 	}
 	for i := 0; i < len(dbEntities)-1; i++ {
-		e.AddRelationship(testSessionID, "db-rel-"+itoa(i), dbEntities[i].ID, dbEntities[i+1].ID, "RELATED", "Related DB concepts", 1.0)
+		mustAddRelationship(t, e, testSessionID, "db-rel-"+itoa(i), dbEntities[i].ID, dbEntities[i+1].ID, "RELATED", "Related DB concepts", 1.0)
 	}
 
 	// One weak connection between communities
-	e.AddRelationship(testSessionID, "cross-rel", mlEntities[0].ID, dbEntities[0].ID, "USED_WITH", "ML can use databases", 0.1)
+	mustAddRelationship(t, e, testSessionID, "cross-rel", mlEntities[0].ID, dbEntities[0].ID, "USED_WITH", "ML can use databases", 0.1)
 
 	// Run community detection
 	config := graph.DefaultLeidenConfig()
@@ -305,11 +305,11 @@ func TestScenario_SnapshotRestore(t *testing.T) {
 
 	// Build up some state
 	embedding := randomVector(testVectorDim)
-	doc, _ := e.AddDocument(testSessionID, "doc-1", "file.pdf")
-	e.AddTextUnit(testSessionID, "tu-1", doc.ID, "Content", embedding, 10)
-	ent1, _ := e.AddEntity(testSessionID, "ent-1", "Entity One", "test", "Description", embedding)
-	ent2, _ := e.AddEntity(testSessionID, "ent-2", "Entity Two", "test", "Description", embedding)
-	e.AddRelationship(testSessionID, "rel-1", ent1.ID, ent2.ID, "RELATED", "Desc", 1.0)
+	doc := mustAddDocument(t, e, testSessionID, "doc-1", "file.pdf")
+	mustAddTextUnit(t, e, testSessionID, "tu-1", doc.ID, "Content", embedding, 10)
+	ent1 := mustAddEntity(t, e, testSessionID, "ent-1", "Entity One", "test", "Description", embedding)
+	ent2 := mustAddEntity(t, e, testSessionID, "ent-2", "Entity Two", "test", "Description", embedding)
+	mustAddRelationship(t, e, testSessionID, "rel-1", ent1.ID, ent2.ID, "RELATED", "Desc", 1.0)
 	e.AddCommunity(testSessionID, "comm-1", "Community", "Summary", "Full", 0, []uint64{ent1.ID, ent2.ID}, []uint64{}, embedding)
 
 	// Get original state
@@ -364,6 +364,7 @@ func TestScenario_ConcurrentMultiUser(t *testing.T) {
 	var wg sync.WaitGroup
 	const numUsers = 10
 	const opsPerUser = 50
+	errCh := make(chan error, numUsers*opsPerUser*3)
 
 	// Simulate multiple users adding and querying data concurrently
 	for user := 0; user < numUsers; user++ {
@@ -376,14 +377,22 @@ func TestScenario_ConcurrentMultiUser(t *testing.T) {
 				prefix := itoa(userID) + "-" + itoa(i)
 
 				// Add document
-				doc, _ := e.AddDocument(testSessionID, "doc-"+prefix, "file.pdf")
+				doc, err := e.AddDocument(testSessionID, "doc-"+prefix, "file.pdf")
+				if err != nil {
+					errCh <- err
+					continue
+				}
 
 				// Add text unit
 				embedding := randomVector(testVectorDim)
-				e.AddTextUnit(testSessionID, "tu-"+prefix, doc.ID, "Content", embedding, 10)
+				if _, err := e.AddTextUnit(testSessionID, "tu-"+prefix, doc.ID, "Content", embedding, 10); err != nil {
+					errCh <- err
+				}
 
 				// Add entity
-				e.AddEntity(testSessionID, "ent-"+prefix, "Entity "+prefix, "test", "Desc", embedding)
+				if _, err := e.AddEntity(testSessionID, "ent-"+prefix, "Entity "+prefix, "test", "Desc", embedding); err != nil {
+					errCh <- err
+				}
 			}
 		}(user)
 	}
@@ -403,6 +412,10 @@ func TestScenario_ConcurrentMultiUser(t *testing.T) {
 	}
 
 	wg.Wait()
+	close(errCh)
+	for err := range errCh {
+		t.Errorf("Concurrent add error: %v", err)
+	}
 
 	// Verify final state
 	info := e.Info()
@@ -425,7 +438,7 @@ func TestScenario_HierarchicalCommunities(t *testing.T) {
 	// Create 20 entities in 4 clusters
 	var entities []*types.Entity
 	for i := 0; i < 20; i++ {
-		ent, _ := e.AddEntity(testSessionID, "ent-"+itoa(i), "Entity "+itoa(i), "test", "Cluster "+itoa(i/5), embedding)
+		ent := mustAddEntity(t, e, testSessionID, "ent-"+itoa(i), "Entity "+itoa(i), "test", "Cluster "+itoa(i/5), embedding)
 		entities = append(entities, ent)
 	}
 
@@ -436,10 +449,10 @@ func TestScenario_HierarchicalCommunities(t *testing.T) {
 			otherCluster := j / 5
 			if cluster == otherCluster {
 				// Dense within cluster
-				e.AddRelationship(testSessionID, "rel-"+itoa(i)+"-"+itoa(j), entities[i].ID, entities[j].ID, "SIMILAR", "Same cluster", 1.0)
+				mustAddRelationship(t, e, testSessionID, "rel-"+itoa(i)+"-"+itoa(j), entities[i].ID, entities[j].ID, "SIMILAR", "Same cluster", 1.0)
 			} else if rand.Float32() < 0.1 {
 				// Sparse between clusters
-				e.AddRelationship(testSessionID, "rel-"+itoa(i)+"-"+itoa(j), entities[i].ID, entities[j].ID, "RELATED", "Different cluster", 0.2)
+				mustAddRelationship(t, e, testSessionID, "rel-"+itoa(i)+"-"+itoa(j), entities[i].ID, entities[j].ID, "RELATED", "Different cluster", 0.2)
 			}
 		}
 	}
@@ -465,7 +478,7 @@ func TestScenario_HierarchicalCommunities(t *testing.T) {
 func TestEngine_DeleteDocument(t *testing.T) {
 	e := NewEngine(testVectorDim)
 
-	doc, _ := e.AddDocument(testSessionID, "doc-1", "file.pdf")
+	doc := mustAddDocument(t, e, testSessionID, "doc-1", "file.pdf")
 
 	// Delete should work via TTL expiry simulation
 	// In production, deletion would go through TTL or explicit delete
@@ -481,9 +494,9 @@ func TestEngine_RebuildVectorIndices(t *testing.T) {
 
 	// Add some data with vectors
 	embedding := randomVector(testVectorDim)
-	doc, _ := e.AddDocument(testSessionID, "doc-1", "file.pdf")
-	e.AddTextUnit(testSessionID, "tu-1", doc.ID, "Content", embedding, 10)
-	e.AddEntity(testSessionID, "ent-1", "Entity", "test", "Desc", embedding)
+	doc := mustAddDocument(t, e, testSessionID, "doc-1", "file.pdf")
+	mustAddTextUnit(t, e, testSessionID, "tu-1", doc.ID, "Content", embedding, 10)
+	mustAddEntity(t, e, testSessionID, "ent-1", "Entity", "test", "Desc", embedding)
 	e.AddCommunity(testSessionID, "comm-1", "Community", "Summary", "Full", 0, nil, nil, embedding)
 
 	// Rebuild indices
@@ -511,8 +524,8 @@ func TestEngine_Clear(t *testing.T) {
 
 	// Add data
 	embedding := randomVector(testVectorDim)
-	e.AddDocument(testSessionID, "doc-1", "file.pdf")
-	e.AddEntity(testSessionID, "ent-1", "Entity", "test", "Desc", embedding)
+	mustAddDocument(t, e, testSessionID, "doc-1", "file.pdf")
+	mustAddEntity(t, e, testSessionID, "ent-1", "Entity", "test", "Desc", embedding)
 
 	// Clear all
 	err := e.Clear()
@@ -576,7 +589,7 @@ func generateSemanticVector(text string) []float32 {
 	v := make([]float32, testVectorDim)
 	// Use text hash to create deterministic but varied vectors
 	for i := range v {
-		v[i] = float32((int(text[i%len(text)]) + i) % 100) / 100.0
+		v[i] = float32((int(text[i%len(text)])+i)%100) / 100.0
 	}
 	return v
 }

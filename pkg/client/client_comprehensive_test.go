@@ -435,7 +435,7 @@ func TestClient_GetEntity(t *testing.T) {
 	defer client.Close()
 
 	embedding := make([]float32, 64)
-	entityID, _ := client.AddEntity("ext-ent-001", "Test Entity", "test", "Description", embedding)
+	entityID := mustAddEntity(t, client, "ext-ent-001", "Test Entity", "test", "Description", embedding)
 
 	entity, err := client.GetEntity(entityID)
 	if err != nil {
@@ -463,7 +463,7 @@ func TestClient_GetEntityByTitle(t *testing.T) {
 	defer client.Close()
 
 	embedding := make([]float32, 64)
-	client.AddEntity("ext-ent-001", "Unique Entity Title", "test", "Description", embedding)
+	mustAddEntity(t, client, "ext-ent-001", "Unique Entity Title", "test", "Description", embedding)
 
 	entity, err := client.GetEntityByTitle("unique entity title") // lowercase lookup
 	if err != nil {
@@ -490,7 +490,7 @@ func TestClient_AddTextUnit(t *testing.T) {
 	defer client.Close()
 
 	// First add document
-	docID, _ := client.AddDocument("doc-001", "test.pdf")
+	docID := mustAddDocument(t, client, "doc-001", "test.pdf")
 
 	embedding := make([]float32, 64)
 	tuID, err := client.AddTextUnit("tu-001", docID, "This is test content", embedding, 5)
@@ -513,9 +513,9 @@ func TestClient_GetTextUnit(t *testing.T) {
 	}
 	defer client.Close()
 
-	docID, _ := client.AddDocument("doc-001", "test.pdf")
+	docID := mustAddDocument(t, client, "doc-001", "test.pdf")
 	embedding := make([]float32, 64)
-	tuID, _ := client.AddTextUnit("tu-001", docID, "Test content", embedding, 5)
+	tuID := mustAddTextUnit(t, client, "tu-001", docID, "Test content", embedding, 5)
 
 	tu, err := client.GetTextUnit(tuID)
 	if err != nil {
@@ -546,8 +546,8 @@ func TestClient_AddRelationship(t *testing.T) {
 	defer client.Close()
 
 	embedding := make([]float32, 64)
-	ent1ID, _ := client.AddEntity("ent-001", "Entity 1", "test", "Desc", embedding)
-	ent2ID, _ := client.AddEntity("ent-002", "Entity 2", "test", "Desc", embedding)
+	ent1ID := mustAddEntity(t, client, "ent-001", "Entity 1", "test", "Desc", embedding)
+	ent2ID := mustAddEntity(t, client, "ent-002", "Entity 2", "test", "Desc", embedding)
 
 	relID, err := client.AddRelationship("rel-001", ent1ID, ent2ID, "RELATED_TO", "Relationship description", 1.0)
 	if err != nil {
@@ -570,9 +570,9 @@ func TestClient_GetRelationship(t *testing.T) {
 	defer client.Close()
 
 	embedding := make([]float32, 64)
-	ent1ID, _ := client.AddEntity("ent-001", "Entity 1", "test", "Desc", embedding)
-	ent2ID, _ := client.AddEntity("ent-002", "Entity 2", "test", "Desc", embedding)
-	relID, _ := client.AddRelationship("rel-001", ent1ID, ent2ID, "RELATED_TO", "Desc", 1.0)
+	ent1ID := mustAddEntity(t, client, "ent-001", "Entity 1", "test", "Desc", embedding)
+	ent2ID := mustAddEntity(t, client, "ent-002", "Entity 2", "test", "Desc", embedding)
+	relID := mustAddRelationship(t, client, "rel-001", ent1ID, ent2ID, "RELATED_TO", "Desc", 1.0)
 
 	rel, err := client.GetRelationship(relID)
 	if err != nil {
@@ -608,7 +608,7 @@ func TestClient_Query(t *testing.T) {
 		embedding[i] = float32(i) / 64.0
 	}
 
-	client.AddEntity("ent-001", "Test Entity", "test", "Description", embedding)
+	mustAddEntity(t, client, "ent-001", "Test Entity", "test", "Description", embedding)
 
 	// Query using QuerySpec
 	spec := types.QuerySpec{
@@ -648,7 +648,7 @@ func TestClient_SetTTL(t *testing.T) {
 	}
 	defer client.Close()
 
-	docID, _ := client.AddDocument("doc-001", "test.pdf")
+	docID := mustAddDocument(t, client, "doc-001", "test.pdf")
 
 	// DEPRECATED: Session-based architecture - TTL managed at session level
 	_ = docID
@@ -670,7 +670,7 @@ func TestClient_GetTTL(t *testing.T) {
 	}
 	defer client.Close()
 
-	docID, _ := client.AddDocument("doc-001", "test.pdf")
+	docID := mustAddDocument(t, client, "doc-001", "test.pdf")
 	// client.SetTTL("document", docID, 3600)
 
 	_ = docID
@@ -722,17 +722,17 @@ func TestClient_FullWorkflow_ChatWithPDF(t *testing.T) {
 		embedding[i] = float32(i) / 64.0
 	}
 
-	tu1ID, _ := client.AddTextUnit("chunk-1", docID, "Machine learning is...", embedding, 10)
-	tu2ID, _ := client.AddTextUnit("chunk-2", docID, "Neural networks are...", embedding, 10)
+	tu1ID := mustAddTextUnit(t, client, "chunk-1", docID, "Machine learning is...", embedding, 10)
+	tu2ID := mustAddTextUnit(t, client, "chunk-2", docID, "Neural networks are...", embedding, 10)
 	t.Logf("Created text units: %d, %d", tu1ID, tu2ID)
 
 	// 3. Add entities
-	ent1ID, _ := client.AddEntity("ent-ml", "Machine Learning", "concept", "ML description", embedding)
-	ent2ID, _ := client.AddEntity("ent-nn", "Neural Network", "concept", "NN description", embedding)
+	ent1ID := mustAddEntity(t, client, "ent-ml", "Machine Learning", "concept", "ML description", embedding)
+	ent2ID := mustAddEntity(t, client, "ent-nn", "Neural Network", "concept", "NN description", embedding)
 	t.Logf("Created entities: %d, %d", ent1ID, ent2ID)
 
 	// 4. Add relationship
-	relID, _ := client.AddRelationship("rel-1", ent1ID, ent2ID, "USES", "ML uses NNs", 0.9)
+	relID := mustAddRelationship(t, client, "rel-1", ent1ID, ent2ID, "USES", "ML uses NNs", 0.9)
 	t.Logf("Created relationship: %d", relID)
 
 	// 5. Link text units to entities
@@ -787,7 +787,7 @@ func TestClient_ConcurrentOperations(t *testing.T) {
 		wg.Add(1)
 		go func(id int) {
 			defer wg.Done()
-			client.AddDocument("doc-"+itoa(id), "file.pdf")
+			mustAddDocument(t, client, "doc-"+itoa(id), "file.pdf")
 		}(i)
 	}
 
@@ -797,7 +797,7 @@ func TestClient_ConcurrentOperations(t *testing.T) {
 		wg.Add(1)
 		go func(id int) {
 			defer wg.Done()
-			client.AddEntity("ent-"+itoa(id), "Entity "+itoa(id), "test", "Desc", embedding)
+			mustAddEntity(t, client, "ent-"+itoa(id), "Entity "+itoa(id), "test", "Desc", embedding)
 		}(i)
 	}
 
@@ -885,7 +885,7 @@ func TestClient_DeleteTextUnit(t *testing.T) {
 	defer client.Close()
 
 	// Add document and text unit first
-	docID, _ := client.AddDocument("doc-001", "test.pdf")
+	docID := mustAddDocument(t, client, "doc-001", "test.pdf")
 	embedding := make([]float32, 64)
 	tuID, err := client.AddTextUnit("tu-to-delete", docID, "Content to delete", embedding, 5)
 	if err != nil {
@@ -947,8 +947,8 @@ func TestClient_DeleteRelationship(t *testing.T) {
 
 	// Add entities and relationship first
 	embedding := make([]float32, 64)
-	ent1ID, _ := client.AddEntity("ent-1", "Entity 1", "test", "Desc", embedding)
-	ent2ID, _ := client.AddEntity("ent-2", "Entity 2", "test", "Desc", embedding)
+	ent1ID := mustAddEntity(t, client, "ent-1", "Entity 1", "test", "Desc", embedding)
+	ent2ID := mustAddEntity(t, client, "ent-2", "Entity 2", "test", "Desc", embedding)
 	relID, err := client.AddRelationship("rel-to-delete", ent1ID, ent2ID, "RELATED", "Desc", 1.0)
 	if err != nil {
 		t.Fatalf("AddRelationship failed: %v", err)
@@ -1100,11 +1100,11 @@ func TestClient_ComputeCommunities(t *testing.T) {
 
 	// Add some entities and relationships for community detection
 	embedding := make([]float32, 64)
-	ent1ID, _ := client.AddEntity("ent-a", "Entity A", "test", "Desc", embedding)
-	ent2ID, _ := client.AddEntity("ent-b", "Entity B", "test", "Desc", embedding)
-	ent3ID, _ := client.AddEntity("ent-c", "Entity C", "test", "Desc", embedding)
-	client.AddRelationship("rel-ab", ent1ID, ent2ID, "RELATED", "Desc", 1.0)
-	client.AddRelationship("rel-bc", ent2ID, ent3ID, "RELATED", "Desc", 1.0)
+	ent1ID := mustAddEntity(t, client, "ent-a", "Entity A", "test", "Desc", embedding)
+	ent2ID := mustAddEntity(t, client, "ent-b", "Entity B", "test", "Desc", embedding)
+	ent3ID := mustAddEntity(t, client, "ent-c", "Entity C", "test", "Desc", embedding)
+	mustAddRelationship(t, client, "rel-ab", ent1ID, ent2ID, "RELATED", "Desc", 1.0)
+	mustAddRelationship(t, client, "rel-bc", ent2ID, ent3ID, "RELATED", "Desc", 1.0)
 
 	result, err := client.ComputeCommunities(1.0, 10)
 	if err != nil {
@@ -1130,11 +1130,11 @@ func TestClient_HierarchicalLeiden(t *testing.T) {
 
 	// Add some entities and relationships for community detection
 	embedding := make([]float32, 64)
-	ent1ID, _ := client.AddEntity("ent-h1", "Entity H1", "test", "Desc", embedding)
-	ent2ID, _ := client.AddEntity("ent-h2", "Entity H2", "test", "Desc", embedding)
-	ent3ID, _ := client.AddEntity("ent-h3", "Entity H3", "test", "Desc", embedding)
-	client.AddRelationship("rel-h12", ent1ID, ent2ID, "RELATED", "Desc", 1.0)
-	client.AddRelationship("rel-h23", ent2ID, ent3ID, "RELATED", "Desc", 1.0)
+	ent1ID := mustAddEntity(t, client, "ent-h1", "Entity H1", "test", "Desc", embedding)
+	ent2ID := mustAddEntity(t, client, "ent-h2", "Entity H2", "test", "Desc", embedding)
+	ent3ID := mustAddEntity(t, client, "ent-h3", "Entity H3", "test", "Desc", embedding)
+	mustAddRelationship(t, client, "rel-h12", ent1ID, ent2ID, "RELATED", "Desc", 1.0)
+	mustAddRelationship(t, client, "rel-h23", ent2ID, ent3ID, "RELATED", "Desc", 1.0)
 
 	result, err := client.HierarchicalLeiden(3, 1.0)
 	if err != nil {
@@ -1160,9 +1160,9 @@ func TestClient_HierarchicalLeidenDefault(t *testing.T) {
 
 	// Add some entities and relationships
 	embedding := make([]float32, 64)
-	ent1ID, _ := client.AddEntity("ent-d1", "Entity D1", "test", "Desc", embedding)
-	ent2ID, _ := client.AddEntity("ent-d2", "Entity D2", "test", "Desc", embedding)
-	client.AddRelationship("rel-d12", ent1ID, ent2ID, "RELATED", "Desc", 1.0)
+	ent1ID := mustAddEntity(t, client, "ent-d1", "Entity D1", "test", "Desc", embedding)
+	ent2ID := mustAddEntity(t, client, "ent-d2", "Entity D2", "test", "Desc", embedding)
+	mustAddRelationship(t, client, "rel-d12", ent1ID, ent2ID, "RELATED", "Desc", 1.0)
 
 	result, err := client.HierarchicalLeidenDefault()
 	if err != nil {
@@ -1243,7 +1243,7 @@ func TestClient_Explain(t *testing.T) {
 	for i := range embedding {
 		embedding[i] = float32(i) / 64.0
 	}
-	client.AddEntity("ent-exp", "Explain Entity", "test", "Desc", embedding)
+	mustAddEntity(t, client, "ent-exp", "Explain Entity", "test", "Desc", embedding)
 
 	// First run a query
 	spec := types.QuerySpec{
@@ -1313,8 +1313,8 @@ func TestClient_MGetEntities(t *testing.T) {
 	defer client.Close()
 
 	embedding := make([]float32, 64)
-	ent1ID, _ := client.AddEntity("mget-ent-1", "MGet Entity 1", "test", "Desc", embedding)
-	ent2ID, _ := client.AddEntity("mget-ent-2", "MGet Entity 2", "test", "Desc", embedding)
+	ent1ID := mustAddEntity(t, client, "mget-ent-1", "MGet Entity 1", "test", "Desc", embedding)
+	ent2ID := mustAddEntity(t, client, "mget-ent-2", "MGet Entity 2", "test", "Desc", embedding)
 
 	entities, err := client.MGetEntities([]uint64{ent1ID, ent2ID})
 	if err != nil {
@@ -1361,8 +1361,8 @@ func TestClient_MGetDocuments(t *testing.T) {
 	}
 	defer client.Close()
 
-	doc1ID, _ := client.AddDocument("mget-doc-1", "file1.pdf")
-	doc2ID, _ := client.AddDocument("mget-doc-2", "file2.pdf")
+	doc1ID := mustAddDocument(t, client, "mget-doc-1", "file1.pdf")
+	doc2ID := mustAddDocument(t, client, "mget-doc-2", "file2.pdf")
 
 	docs, err := client.MGetDocuments([]uint64{doc1ID, doc2ID})
 	if err != nil {
@@ -1384,7 +1384,7 @@ func TestClient_MSetTextUnits(t *testing.T) {
 	}
 	defer client.Close()
 
-	docID, _ := client.AddDocument("mset-tu-doc", "test.pdf")
+	docID := mustAddDocument(t, client, "mset-tu-doc", "test.pdf")
 	embedding := make([]float32, 64)
 
 	tus := []types.BulkTextUnitInput{
@@ -1412,10 +1412,10 @@ func TestClient_MGetTextUnits(t *testing.T) {
 	}
 	defer client.Close()
 
-	docID, _ := client.AddDocument("mget-tu-doc", "test.pdf")
+	docID := mustAddDocument(t, client, "mget-tu-doc", "test.pdf")
 	embedding := make([]float32, 64)
-	tu1ID, _ := client.AddTextUnit("mget-tu-1", docID, "Content 1", embedding, 5)
-	tu2ID, _ := client.AddTextUnit("mget-tu-2", docID, "Content 2", embedding, 5)
+	tu1ID := mustAddTextUnit(t, client, "mget-tu-1", docID, "Content 1", embedding, 5)
+	tu2ID := mustAddTextUnit(t, client, "mget-tu-2", docID, "Content 2", embedding, 5)
 
 	tus, err := client.MGetTextUnits([]uint64{tu1ID, tu2ID})
 	if err != nil {
@@ -1438,9 +1438,9 @@ func TestClient_MSetRelationships(t *testing.T) {
 	defer client.Close()
 
 	embedding := make([]float32, 64)
-	ent1ID, _ := client.AddEntity("mset-rel-1", "Entity 1", "test", "Desc", embedding)
-	ent2ID, _ := client.AddEntity("mset-rel-2", "Entity 2", "test", "Desc", embedding)
-	ent3ID, _ := client.AddEntity("mset-rel-3", "Entity 3", "test", "Desc", embedding)
+	ent1ID := mustAddEntity(t, client, "mset-rel-1", "Entity 1", "test", "Desc", embedding)
+	ent2ID := mustAddEntity(t, client, "mset-rel-2", "Entity 2", "test", "Desc", embedding)
+	ent3ID := mustAddEntity(t, client, "mset-rel-3", "Entity 3", "test", "Desc", embedding)
 
 	rels := []types.BulkRelationshipInput{
 		{ExternalID: "bulk-rel-1", SourceID: ent1ID, TargetID: ent2ID, Type: "RELATED", Description: "Desc", Weight: 1.0},
@@ -1468,10 +1468,10 @@ func TestClient_MGetRelationships(t *testing.T) {
 	defer client.Close()
 
 	embedding := make([]float32, 64)
-	ent1ID, _ := client.AddEntity("mget-rel-1", "Entity 1", "test", "Desc", embedding)
-	ent2ID, _ := client.AddEntity("mget-rel-2", "Entity 2", "test", "Desc", embedding)
-	rel1ID, _ := client.AddRelationship("mget-rel-a", ent1ID, ent2ID, "TYPE_A", "Desc", 1.0)
-	rel2ID, _ := client.AddRelationship("mget-rel-b", ent2ID, ent1ID, "TYPE_B", "Desc", 1.0)
+	ent1ID := mustAddEntity(t, client, "mget-rel-1", "Entity 1", "test", "Desc", embedding)
+	ent2ID := mustAddEntity(t, client, "mget-rel-2", "Entity 2", "test", "Desc", embedding)
+	rel1ID := mustAddRelationship(t, client, "mget-rel-a", ent1ID, ent2ID, "TYPE_A", "Desc", 1.0)
+	rel2ID := mustAddRelationship(t, client, "mget-rel-b", ent2ID, ent1ID, "TYPE_B", "Desc", 1.0)
 
 	rels, err := client.MGetRelationships([]uint64{rel1ID, rel2ID})
 	if err != nil {
