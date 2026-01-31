@@ -15,9 +15,9 @@ import (
 
 // WAL (Write-Ahead Log) provides durability through logging
 type WAL struct {
-	dir       string
-	file      *os.File
-	mu        sync.Mutex
+	dir  string
+	file *os.File
+	mu   sync.Mutex
 
 	// State
 	currentLSN uint64
@@ -91,7 +91,9 @@ func (w *WAL) openSegment(num int) error {
 	}
 
 	if w.file != nil {
-		w.file.Close()
+		if err := w.file.Close(); err != nil {
+			return err
+		}
 	}
 
 	w.file = f
@@ -224,7 +226,9 @@ func (w *WAL) Close() error {
 
 	if w.file != nil {
 		if err := w.file.Sync(); err != nil {
-			_ = w.file.Close()
+			if closeErr := w.file.Close(); closeErr != nil {
+				return fmt.Errorf("sync failed: %v (close failed: %v)", err, closeErr)
+			}
 			return err
 		}
 		return w.file.Close()
@@ -309,7 +313,9 @@ func (w *WAL) TruncateBefore(targetLSN uint64) error {
 		}
 
 		if allBelow && len(entries) > 0 {
-			os.Remove(path)
+			if err := os.Remove(path); err != nil && !os.IsNotExist(err) {
+				return err
+			}
 		}
 	}
 
@@ -352,14 +358,16 @@ func ReadEntries(dir string, fromLSN uint64) ([]*WALEntry, error) {
 	return entries, nil
 }
 
-func readEntriesFromFile(path string, fromLSN uint64) ([]*WALEntry, error) {
+func readEntriesFromFile(path string, fromLSN uint64) (entries []*WALEntry, retErr error) {
 	f, err := os.Open(path)
 	if err != nil {
 		return nil, err
 	}
-	defer f.Close()
-
-	var entries []*WALEntry
+	defer func() {
+		if err := f.Close(); err != nil && retErr == nil {
+			retErr = err
+		}
+	}()
 
 	for {
 		entry, err := readEntry(f)

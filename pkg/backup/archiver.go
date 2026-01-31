@@ -22,21 +22,33 @@ func NewArchiver(baseDir string) *Archiver {
 }
 
 // Archive creates a tar.gz archive of the data directory
-func (a *Archiver) Archive(outputPath string) error {
+func (a *Archiver) Archive(outputPath string) (retErr error) {
 	// Create output file
 	f, err := os.Create(outputPath)
 	if err != nil {
 		return fmt.Errorf("create archive: %w", err)
 	}
-	defer f.Close()
+	defer func() {
+		if err := f.Close(); err != nil && retErr == nil {
+			retErr = err
+		}
+	}()
 
 	// Create gzip writer
 	gzWriter := gzip.NewWriter(f)
-	defer gzWriter.Close()
+	defer func() {
+		if err := gzWriter.Close(); err != nil && retErr == nil {
+			retErr = err
+		}
+	}()
 
 	// Create tar writer
 	tarWriter := tar.NewWriter(gzWriter)
-	defer tarWriter.Close()
+	defer func() {
+		if err := tarWriter.Close(); err != nil && retErr == nil {
+			retErr = err
+		}
+	}()
 
 	// Walk directory and add files
 	return filepath.Walk(a.baseDir, func(path string, info os.FileInfo, err error) error {
@@ -68,9 +80,11 @@ func (a *Archiver) Archive(outputPath string) error {
 			if err != nil {
 				return err
 			}
-			defer file.Close()
 
 			_, err = io.Copy(tarWriter, file)
+			if closeErr := file.Close(); closeErr != nil && err == nil {
+				return closeErr
+			}
 			return err
 		}
 
@@ -79,20 +93,28 @@ func (a *Archiver) Archive(outputPath string) error {
 }
 
 // Extract extracts a tar.gz archive to the data directory
-func (a *Archiver) Extract(archivePath string) error {
+func (a *Archiver) Extract(archivePath string) (retErr error) {
 	// Open archive
 	f, err := os.Open(archivePath)
 	if err != nil {
 		return fmt.Errorf("open archive: %w", err)
 	}
-	defer f.Close()
+	defer func() {
+		if err := f.Close(); err != nil && retErr == nil {
+			retErr = err
+		}
+	}()
 
 	// Create gzip reader
 	gzReader, err := gzip.NewReader(f)
 	if err != nil {
 		return fmt.Errorf("gzip reader: %w", err)
 	}
-	defer gzReader.Close()
+	defer func() {
+		if err := gzReader.Close(); err != nil && retErr == nil {
+			retErr = err
+		}
+	}()
 
 	// Create tar reader
 	tarReader := tar.NewReader(gzReader)
@@ -129,10 +151,14 @@ func (a *Archiver) Extract(archivePath string) error {
 
 			// Copy content
 			if _, err := io.Copy(outFile, tarReader); err != nil {
-				outFile.Close()
+				if closeErr := outFile.Close(); closeErr != nil {
+					return fmt.Errorf("copy failed: %v (close failed: %v)", err, closeErr)
+				}
 				return err
 			}
-			outFile.Close()
+			if err := outFile.Close(); err != nil {
+				return err
+			}
 		}
 	}
 
@@ -172,18 +198,26 @@ func ListArchives(dir string) ([]*ArchiveInfo, error) {
 }
 
 // VerifyArchive verifies archive integrity
-func VerifyArchive(archivePath string) error {
+func VerifyArchive(archivePath string) (retErr error) {
 	f, err := os.Open(archivePath)
 	if err != nil {
 		return err
 	}
-	defer f.Close()
+	defer func() {
+		if err := f.Close(); err != nil && retErr == nil {
+			retErr = err
+		}
+	}()
 
 	gzReader, err := gzip.NewReader(f)
 	if err != nil {
 		return fmt.Errorf("invalid gzip: %w", err)
 	}
-	defer gzReader.Close()
+	defer func() {
+		if err := gzReader.Close(); err != nil && retErr == nil {
+			retErr = err
+		}
+	}()
 
 	tarReader := tar.NewReader(gzReader)
 

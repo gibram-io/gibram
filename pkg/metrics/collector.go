@@ -14,7 +14,6 @@ type Collector struct {
 	histos   sync.Map // map[string]*Histogram
 
 	startTime time.Time
-	mu        sync.RWMutex
 }
 
 // NewCollector creates a new metrics collector
@@ -72,10 +71,10 @@ func (c *Collector) GetHistogram(name string) *HistogramStats {
 // Snapshot returns all metrics as a snapshot
 func (c *Collector) Snapshot() *Snapshot {
 	snap := &Snapshot{
-		Timestamp: time.Now(),
-		Uptime:    time.Since(c.startTime),
-		Counters:  make(map[string]int64),
-		Gauges:    make(map[string]int64),
+		Timestamp:  time.Now(),
+		Uptime:     time.Since(c.startTime),
+		Counters:   make(map[string]int64),
+		Gauges:     make(map[string]int64),
 		Histograms: make(map[string]*HistogramStats),
 	}
 

@@ -2,7 +2,6 @@
 package vector
 
 import (
-	"math/rand"
 	"testing"
 )
 
@@ -289,9 +288,4 @@ func itoa(i int) string {
 		i /= 10
 	}
 	return string(buf[pos:])
-}
-
-// randomVector is duplicated here to avoid import cycle issues in benchmarks
-func init() {
-	rand.Seed(42) // Fixed seed for reproducible benchmarks
 }

@@ -272,7 +272,9 @@ func (s *Server) Start(addr string) error {
 func (s *Server) Stop() {
 	close(s.stopCh)
 	if s.listener != nil {
-		s.listener.Close()
+		if err := s.listener.Close(); err != nil {
+			logging.Error("Listener close error: %v", err)
+		}
 	}
 	s.wg.Wait()
 }
@@ -303,14 +305,21 @@ type connState struct {
 
 func (s *Server) handleConnection(conn net.Conn) {
 	defer s.wg.Done()
-	defer conn.Close()
+	defer func() {
+		if err := conn.Close(); err != nil {
+			logging.Error("Connection close error: %v", err)
+		}
+	}()
 
 	reader := bufio.NewReader(conn)
 	state := &connState{}
 
 	// If auth is required, set short timeout for unauthenticated connections
 	if s.apiKeyStore != nil {
-		conn.SetDeadline(time.Now().Add(s.unauthTimeout))
+		if err := conn.SetDeadline(time.Now().Add(s.unauthTimeout)); err != nil {
+			logging.Error("Set deadline error: %v", err)
+			return
+		}
 	}
 
 	for {
@@ -318,6 +327,7 @@ func (s *Server) handleConnection(conn net.Conn) {
 		case <-s.stopCh:
 			return
 		default:
+			_ = 0
 		}
 
 		// Read envelope
@@ -339,7 +349,9 @@ func (s *Server) handleConnection(conn net.Conn) {
 					CmdType:   pb.CommandType_CMD_ERROR,
 					Payload:   s.errorPayload("authentication required"),
 				}
-				s.writeEnvelope(conn, response)
+				if err := s.writeEnvelope(conn, response); err != nil {
+					logging.Error("Write auth required response error: %v", err)
+				}
 				return
 			}
 
@@ -356,7 +368,10 @@ func (s *Server) handleConnection(conn net.Conn) {
 			}
 
 			// Auth succeeded, extend deadline
-			conn.SetDeadline(time.Now().Add(s.idleTimeout))
+			if err := conn.SetDeadline(time.Now().Add(s.idleTimeout)); err != nil {
+				logging.Error("Set deadline error: %v", err)
+				return
+			}
 			continue
 		}
 
@@ -368,13 +383,19 @@ func (s *Server) handleConnection(conn net.Conn) {
 				CmdType:   pb.CommandType_CMD_ERROR,
 				Payload:   s.errorPayload("rate limit exceeded"),
 			}
-			s.writeEnvelope(conn, response)
+			if err := s.writeEnvelope(conn, response); err != nil {
+				logging.Error("Write rate limit response error: %v", err)
+				return
+			}
 			continue
 		}
 
 		// Reset idle timeout
 		if state.authenticated {
-			conn.SetDeadline(time.Now().Add(s.idleTimeout))
+			if err := conn.SetDeadline(time.Now().Add(s.idleTimeout)); err != nil {
+				logging.Error("Set deadline error: %v", err)
+				return
+			}
 		}
 
 		// Process and send response

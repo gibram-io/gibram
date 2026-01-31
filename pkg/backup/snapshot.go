@@ -22,13 +22,13 @@ type Snapshot struct {
 
 // SnapshotHeader is written at the beginning of snapshot files
 type SnapshotHeader struct {
-	Magic       [4]byte // "GRAM" (GibRAM magic)
-	Version     uint32
-	Timestamp   int64
-	LSN         uint64
-	Checksum    uint32
-	Flags       uint32
-	Reserved    [32]byte
+	Magic     [4]byte // "GRAM" (GibRAM magic)
+	Version   uint32
+	Timestamp int64
+	LSN       uint64
+	Checksum  uint32
+	Flags     uint32
+	Reserved  [32]byte
 }
 
 // SnapshotWriter writes snapshot data
@@ -55,8 +55,13 @@ func NewSnapshotWriter(path string, header *SnapshotHeader) (*SnapshotWriter, er
 
 	// Write header (uncompressed)
 	if err := binary.Write(f, binary.BigEndian, header); err != nil {
-		f.Close()
-		os.Remove(tmpPath)
+		if closeErr := f.Close(); closeErr != nil {
+			_ = os.Remove(tmpPath)
+			return nil, fmt.Errorf("write snapshot header failed: %v (close failed: %v)", err, closeErr)
+		}
+		if rmErr := os.Remove(tmpPath); rmErr != nil && !os.IsNotExist(rmErr) {
+			return nil, fmt.Errorf("write snapshot header failed: %v (cleanup failed: %v)", err, rmErr)
+		}
 		return nil, err
 	}
 
@@ -108,21 +113,30 @@ func (w *SnapshotWriter) WriteSection(name string, data []byte) error {
 // Close closes the snapshot writer and atomically renames temp file to final path
 func (w *SnapshotWriter) Close() error {
 	if err := w.gzWriter.Close(); err != nil {
-		w.file.Close()
-		os.Remove(w.tmpPath) // Clean up temp file on error
+		if closeErr := w.file.Close(); closeErr != nil {
+			_ = os.Remove(w.tmpPath)
+			return fmt.Errorf("gzip close failed: %v (file close failed: %v)", err, closeErr)
+		}
+		if rmErr := os.Remove(w.tmpPath); rmErr != nil && !os.IsNotExist(rmErr) {
+			return fmt.Errorf("gzip close failed: %v (cleanup failed: %v)", err, rmErr)
+		}
 		return err
 	}
 	if err := w.file.Close(); err != nil {
-		os.Remove(w.tmpPath) // Clean up temp file on error
+		if rmErr := os.Remove(w.tmpPath); rmErr != nil && !os.IsNotExist(rmErr) {
+			return fmt.Errorf("file close failed: %v (cleanup failed: %v)", err, rmErr)
+		}
 		return err
 	}
-	
+
 	// Atomically rename tmp file to final path
 	if err := os.Rename(w.tmpPath, w.path); err != nil {
-		os.Remove(w.tmpPath) // Clean up temp file on error
+		if rmErr := os.Remove(w.tmpPath); rmErr != nil && !os.IsNotExist(rmErr) {
+			return fmt.Errorf("failed to rename snapshot: %v (cleanup failed: %v)", err, rmErr)
+		}
 		return fmt.Errorf("failed to rename snapshot: %w", err)
 	}
-	
+
 	return nil
 }
 
@@ -148,20 +162,26 @@ func NewSnapshotReader(path string) (*SnapshotReader, error) {
 	// Read header
 	header := &SnapshotHeader{}
 	if err := binary.Read(f, binary.BigEndian, header); err != nil {
-		f.Close()
+		if closeErr := f.Close(); closeErr != nil {
+			return nil, fmt.Errorf("read snapshot header failed: %v (close failed: %v)", err, closeErr)
+		}
 		return nil, err
 	}
 
 	// Verify magic
 	if header.Magic != [4]byte{'G', 'R', 'A', 'M'} {
-		f.Close()
+		if closeErr := f.Close(); closeErr != nil {
+			return nil, fmt.Errorf("invalid snapshot magic (close failed: %v)", closeErr)
+		}
 		return nil, fmt.Errorf("invalid snapshot magic")
 	}
 
 	// Create gzip reader
 	gz, err := gzip.NewReader(f)
 	if err != nil {
-		f.Close()
+		if closeErr := f.Close(); closeErr != nil {
+			return nil, fmt.Errorf("create gzip reader failed: %v (close failed: %v)", err, closeErr)
+		}
 		return nil, err
 	}
 
@@ -236,8 +256,13 @@ func CreateSnapshot(path string, lsn uint64, writeFunc func(w *SnapshotWriter) e
 	}
 
 	if err := writeFunc(writer); err != nil {
-		writer.Close()
-		os.Remove(path)
+		if closeErr := writer.Close(); closeErr != nil {
+			_ = os.Remove(path)
+			return fmt.Errorf("snapshot write failed: %v (close failed: %v)", err, closeErr)
+		}
+		if rmErr := os.Remove(path); rmErr != nil && !os.IsNotExist(rmErr) {
+			return fmt.Errorf("snapshot write failed: %v (cleanup failed: %v)", err, rmErr)
+		}
 		return err
 	}
 
@@ -250,7 +275,14 @@ func RestoreSnapshot(path string, readFunc func(r *SnapshotReader) error) error 
 	if err != nil {
 		return err
 	}
-	defer reader.Close()
-
-	return readFunc(reader)
+	if err := readFunc(reader); err != nil {
+		if closeErr := reader.Close(); closeErr != nil {
+			return fmt.Errorf("read snapshot failed: %v (close failed: %v)", err, closeErr)
+		}
+		return err
+	}
+	if err := reader.Close(); err != nil {
+		return err
+	}
+	return nil
 }

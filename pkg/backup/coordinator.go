@@ -82,8 +82,10 @@ func (bc *BackupCoordinator) Commit(writeFunc func(w *SnapshotWriter) error) err
 	if err := bc.walWriter.Flush(); err != nil {
 		// Snapshot was created but WAL flush failed
 		// Remove the snapshot to maintain consistency
-		os.Remove(bc.snapshotPath)
 		bc.state = BackupStateAborted
+		if rmErr := os.Remove(bc.snapshotPath); rmErr != nil && !os.IsNotExist(rmErr) {
+			return fmt.Errorf("failed to flush WAL after snapshot: %v (cleanup failed: %v)", err, rmErr)
+		}
 		return fmt.Errorf("failed to flush WAL after snapshot: %w", err)
 	}
 
@@ -103,12 +105,18 @@ func (bc *BackupCoordinator) Abort() error {
 	}
 
 	// Clean up any temporary files
+	var cleanupErr error
 	for _, tmpFile := range bc.tmpFiles {
-		os.Remove(tmpFile)
+		if err := os.Remove(tmpFile); err != nil && !os.IsNotExist(err) && cleanupErr == nil {
+			cleanupErr = err
+		}
 	}
 	bc.tmpFiles = nil
 
 	bc.state = BackupStateAborted
+	if cleanupErr != nil {
+		return fmt.Errorf("cleanup failed: %w", cleanupErr)
+	}
 	return nil
 }
 
@@ -141,7 +149,9 @@ func (bc *BackupCoordinator) ExecuteBackup(writeFunc func(w *SnapshotWriter) err
 	err = bc.Commit(writeFunc)
 	if err != nil {
 		// Attempt to abort if commit failed
-		bc.Abort()
+		if abortErr := bc.Abort(); abortErr != nil {
+			return fmt.Errorf("commit phase failed: %v (abort failed: %v)", err, abortErr)
+		}
 		return fmt.Errorf("commit phase failed: %w", err)
 	}
 

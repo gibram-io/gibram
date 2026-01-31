@@ -75,7 +75,11 @@ func TestLoadOrGenerateTLSConfig_WithCertFiles(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create temp dir: %v", err)
 	}
-	defer os.RemoveAll(tmpDir)
+	defer func() {
+		if err := os.RemoveAll(tmpDir); err != nil {
+			t.Logf("failed to remove temp dir: %v", err)
+		}
+	}()
 
 	// Generate test certificates
 	certPEM, keyPEM, err := GenerateSelfSignedCert([]string{"localhost"}, 24*time.Hour)
@@ -107,7 +111,7 @@ func TestLoadOrGenerateTLSConfig_WithCertFiles(t *testing.T) {
 		t.Error("TLS should be enabled with cert files")
 	}
 	if tlsConfig == nil {
-		t.Error("tlsConfig should not be nil")
+		t.Fatal("tlsConfig should not be nil")
 	}
 	if len(tlsConfig.Certificates) == 0 {
 		t.Error("tlsConfig should have certificates")
@@ -119,7 +123,11 @@ func TestLoadOrGenerateTLSConfig_AutoCert(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create temp dir: %v", err)
 	}
-	defer os.RemoveAll(tmpDir)
+	defer func() {
+		if err := os.RemoveAll(tmpDir); err != nil {
+			t.Logf("failed to remove temp dir: %v", err)
+		}
+	}()
 
 	cfg := &TLSConfig{
 		CertFile: "",
@@ -136,7 +144,7 @@ func TestLoadOrGenerateTLSConfig_AutoCert(t *testing.T) {
 		t.Error("TLS should be enabled with AutoCert")
 	}
 	if tlsConfig == nil {
-		t.Error("tlsConfig should not be nil")
+		t.Fatal("tlsConfig should not be nil")
 	}
 
 	// Verify cert files were cached
@@ -168,7 +176,11 @@ func TestLoadOrGenerateTLSConfig_Disabled(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create temp dir: %v", err)
 	}
-	defer os.RemoveAll(tmpDir)
+	defer func() {
+		if err := os.RemoveAll(tmpDir); err != nil {
+			t.Logf("failed to remove temp dir: %v", err)
+		}
+	}()
 
 	cfg := &TLSConfig{
 		CertFile: "",
@@ -193,7 +205,11 @@ func TestLoadOrGenerateTLSConfig_InvalidCertFile(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create temp dir: %v", err)
 	}
-	defer os.RemoveAll(tmpDir)
+	defer func() {
+		if err := os.RemoveAll(tmpDir); err != nil {
+			t.Logf("failed to remove temp dir: %v", err)
+		}
+	}()
 
 	cfg := &TLSConfig{
 		CertFile: "/nonexistent/cert.pem",

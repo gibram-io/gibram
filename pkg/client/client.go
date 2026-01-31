@@ -158,7 +158,9 @@ func (p *ConnPool) createConn() (*pooledConn, error) {
 	// Authenticate if API key is provided
 	if p.config.APIKey != "" {
 		if err := p.authenticateConn(pc); err != nil {
-			conn.Close()
+			if closeErr := conn.Close(); closeErr != nil {
+				return nil, fmt.Errorf("authentication failed: %v (close failed: %v)", err, closeErr)
+			}
 			return nil, fmt.Errorf("authentication failed: %w", err)
 		}
 		pc.authenticated = true
@@ -245,6 +247,7 @@ func (p *ConnPool) getConn() (*pooledConn, error) {
 			p.closeConn(pc)
 		}
 	default:
+		_ = 0
 	}
 
 	// Check if we can create new connection
@@ -278,6 +281,7 @@ func (p *ConnPool) putConn(pc *pooledConn) {
 
 	select {
 	case p.available <- pc:
+		return
 	default:
 		p.closeConn(pc)
 	}
@@ -285,7 +289,9 @@ func (p *ConnPool) putConn(pc *pooledConn) {
 
 // closeConn closes a connection
 func (p *ConnPool) closeConn(pc *pooledConn) {
-	pc.conn.Close()
+	if err := pc.conn.Close(); err != nil {
+		pc.inUse.Store(false)
+	}
 	atomic.AddInt32(&p.activeCount, -1)
 
 	p.mu.Lock()
@@ -335,6 +341,7 @@ func (p *ConnPool) cleanIdleConnections() {
 		for _, pc := range toReturn {
 			select {
 			case p.available <- pc:
+				continue
 			default:
 				p.closeConn(pc)
 			}
@@ -352,7 +359,9 @@ func (p *ConnPool) Close() {
 
 	p.mu.Lock()
 	for _, pc := range p.connections {
-		pc.conn.Close()
+		if err := pc.conn.Close(); err != nil {
+			pc.inUse.Store(false)
+		}
 	}
 	p.connections = nil
 	p.mu.Unlock()
@@ -503,14 +512,18 @@ func (c *Client) doSend(pc *pooledConn, cmdType pb.CommandType, payload proto.Me
 	}
 
 	// Set write deadline
-	pc.conn.SetWriteDeadline(time.Now().Add(c.pool.config.ConnTimeout))
+	if err := pc.conn.SetWriteDeadline(time.Now().Add(c.pool.config.ConnTimeout)); err != nil {
+		return nil, err
+	}
 
 	if err := writeEnvelope(pc.conn, env); err != nil {
 		return nil, err
 	}
 
 	// Set read deadline
-	pc.conn.SetReadDeadline(time.Now().Add(c.pool.config.ConnTimeout * 2))
+	if err := pc.conn.SetReadDeadline(time.Now().Add(c.pool.config.ConnTimeout * 2)); err != nil {
+		return nil, err
+	}
 
 	resp, err := readEnvelope(pc.reader)
 	if err != nil {
@@ -518,7 +531,9 @@ func (c *Client) doSend(pc *pooledConn, cmdType pb.CommandType, payload proto.Me
 	}
 
 	// Clear deadlines
-	pc.conn.SetDeadline(time.Time{})
+	if err := pc.conn.SetDeadline(time.Time{}); err != nil {
+		return nil, err
+	}
 
 	// Check for error response
 	if resp.CmdType == pb.CommandType_CMD_ERROR {

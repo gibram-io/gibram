@@ -568,7 +568,9 @@ func (e *Engine) ComputeCommunities(sessionID string, config graph.LeidenConfig)
 	communities := graph.BuildCommunities(clusters, entStore, relStore, idGen, 0)
 
 	for _, comm := range communities {
-		sess.AddCommunity(comm.ExternalID, comm.Title, comm.Summary, comm.FullContent, comm.Level, comm.EntityIDs, comm.RelationshipIDs, nil)
+		if _, err := sess.AddCommunity(comm.ExternalID, comm.Title, comm.Summary, comm.FullContent, comm.Level, comm.EntityIDs, comm.RelationshipIDs, nil); err != nil {
+			return nil, err
+		}
 	}
 
 	return communities, nil
@@ -620,7 +622,9 @@ func (e *Engine) ComputeHierarchicalCommunities(sessionID string, config graph.L
 	communities := graph.BuildHierarchicalCommunities(hierarchical, entStore, relStore, idGen)
 
 	for _, comm := range communities {
-		sess.AddCommunity(comm.ExternalID, comm.Title, comm.Summary, comm.FullContent, comm.Level, comm.EntityIDs, comm.RelationshipIDs, nil)
+		if _, err := sess.AddCommunity(comm.ExternalID, comm.Title, comm.Summary, comm.FullContent, comm.Level, comm.EntityIDs, comm.RelationshipIDs, nil); err != nil {
+			return nil, err
+		}
 	}
 
 	return communities, nil
@@ -985,13 +989,19 @@ func (e *Engine) RebuildVectorIndices(sessionID string) error {
 	newCommIdx := sess.GetCommunityIndex()
 
 	for id, vec := range textUnitVectors {
-		newTuIdx.Add(id, vec)
+		if err := newTuIdx.Add(id, vec); err != nil {
+			return err
+		}
 	}
 	for id, vec := range entityVectors {
-		newEntIdx.Add(id, vec)
+		if err := newEntIdx.Add(id, vec); err != nil {
+			return err
+		}
 	}
 	for id, vec := range communityVectors {
-		newCommIdx.Add(id, vec)
+		if err := newCommIdx.Add(id, vec); err != nil {
+			return err
+		}
 	}
 
 	return nil

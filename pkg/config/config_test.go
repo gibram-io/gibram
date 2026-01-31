@@ -17,7 +17,11 @@ func TestValidatePath(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create temp dir: %v", err)
 	}
-	defer os.RemoveAll(tmpDir)
+	defer func() {
+		if err := os.RemoveAll(tmpDir); err != nil {
+			t.Logf("failed to remove temp dir: %v", err)
+		}
+	}()
 
 	subDir := filepath.Join(tmpDir, "subdir")
 	if err := os.MkdirAll(subDir, 0755); err != nil {
@@ -69,7 +73,11 @@ func TestSanitizeDataDir(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create temp dir: %v", err)
 	}
-	defer os.RemoveAll(tmpDir)
+	defer func() {
+		if err := os.RemoveAll(tmpDir); err != nil {
+			t.Logf("failed to remove temp dir: %v", err)
+		}
+	}()
 
 	tests := []struct {
 		name        string
@@ -158,7 +166,11 @@ func TestLoadConfig(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create temp dir: %v", err)
 	}
-	defer os.RemoveAll(tmpDir)
+	defer func() {
+		if err := os.RemoveAll(tmpDir); err != nil {
+			t.Logf("failed to remove temp dir: %v", err)
+		}
+	}()
 
 	configPath := filepath.Join(tmpDir, "config.yaml")
 	dataDir := filepath.Join(tmpDir, "data")
@@ -213,7 +225,11 @@ func TestLoadConfig_InvalidYAML(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create temp dir: %v", err)
 	}
-	defer os.RemoveAll(tmpDir)
+	defer func() {
+		if err := os.RemoveAll(tmpDir); err != nil {
+			t.Logf("failed to remove temp dir: %v", err)
+		}
+	}()
 
 	configPath := filepath.Join(tmpDir, "config.yaml")
 	invalidContent := `
@@ -237,7 +253,11 @@ func TestSaveConfig(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create temp dir: %v", err)
 	}
-	defer os.RemoveAll(tmpDir)
+	defer func() {
+		if err := os.RemoveAll(tmpDir); err != nil {
+			t.Logf("failed to remove temp dir: %v", err)
+		}
+	}()
 
 	configPath := filepath.Join(tmpDir, "subdir", "config.yaml")
 	cfg := DefaultConfig()
@@ -603,6 +623,7 @@ func TestPermissionConstants(t *testing.T) {
 		t.Errorf("expected PermRead = 'read', got %s", PermRead)
 	}
 }
+
 // =============================================================================
 // Additional Coverage Tests
 // =============================================================================
@@ -613,7 +634,11 @@ func TestValidatePath_NestedPaths(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create temp dir: %v", err)
 	}
-	defer os.RemoveAll(tmpDir)
+	defer func() {
+		if err := os.RemoveAll(tmpDir); err != nil {
+			t.Logf("failed to remove temp dir: %v", err)
+		}
+	}()
 
 	// Create all directories for the nested path
 	deepPath := filepath.Join(tmpDir, "sub", "deep", "path")
@@ -636,7 +661,11 @@ func TestSanitizeDataDir_PathTraversal(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create temp dir: %v", err)
 	}
-	defer os.RemoveAll(tmpDir)
+	defer func() {
+		if err := os.RemoveAll(tmpDir); err != nil {
+			t.Logf("failed to remove temp dir: %v", err)
+		}
+	}()
 
 	// Test path with .. at the end doesn't fail if it resolves to valid location
 	validPath := filepath.Join(tmpDir, "data", "sub", "..", "final")
@@ -669,7 +698,11 @@ func TestSanitizeDataDir_ValidSystemSubdirs(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create temp dir: %v", err)
 	}
-	defer os.RemoveAll(tmpDir)
+	defer func() {
+		if err := os.RemoveAll(tmpDir); err != nil {
+			t.Logf("failed to remove temp dir: %v", err)
+		}
+	}()
 
 	path, err := SanitizeDataDir(tmpDir)
 	if err != nil {
@@ -685,7 +718,11 @@ func TestLoadConfig_WithAPIKey(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create temp dir: %v", err)
 	}
-	defer os.RemoveAll(tmpDir)
+	defer func() {
+		if err := os.RemoveAll(tmpDir); err != nil {
+			t.Logf("failed to remove temp dir: %v", err)
+		}
+	}()
 
 	configPath := filepath.Join(tmpDir, "config.yaml")
 	dataDir := filepath.Join(tmpDir, "data")
@@ -729,7 +766,11 @@ func TestLoadConfig_InvalidDataDir(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create temp dir: %v", err)
 	}
-	defer os.RemoveAll(tmpDir)
+	defer func() {
+		if err := os.RemoveAll(tmpDir); err != nil {
+			t.Logf("failed to remove temp dir: %v", err)
+		}
+	}()
 
 	configPath := filepath.Join(tmpDir, "config.yaml")
 
@@ -861,7 +902,11 @@ func TestValidatePath_Symlinks(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create temp dir: %v", err)
 	}
-	defer os.RemoveAll(tmpDir)
+	defer func() {
+		if err := os.RemoveAll(tmpDir); err != nil {
+			t.Logf("failed to remove temp dir: %v", err)
+		}
+	}()
 
 	// Create a subdirectory
 	subDir := filepath.Join(tmpDir, "sub")
@@ -898,7 +943,11 @@ func TestLoadConfig_EmptyKeys(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create temp dir: %v", err)
 	}
-	defer os.RemoveAll(tmpDir)
+	defer func() {
+		if err := os.RemoveAll(tmpDir); err != nil {
+			t.Logf("failed to remove temp dir: %v", err)
+		}
+	}()
 
 	configPath := filepath.Join(tmpDir, "config.yaml")
 	dataDir := filepath.Join(tmpDir, "data")
@@ -937,7 +986,11 @@ func TestSaveConfig_ReadOnly(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create temp dir: %v", err)
 	}
-	defer os.RemoveAll(tmpDir)
+	defer func() {
+		if err := os.RemoveAll(tmpDir); err != nil {
+			t.Logf("failed to remove temp dir: %v", err)
+		}
+	}()
 
 	// Create a read-only directory
 	readOnlyDir := filepath.Join(tmpDir, "readonly")
@@ -947,7 +1000,11 @@ func TestSaveConfig_ReadOnly(t *testing.T) {
 	if err := os.Chmod(readOnlyDir, 0444); err != nil {
 		t.Fatalf("failed to chmod readonly dir: %v", err)
 	}
-	defer os.Chmod(readOnlyDir, 0755) // Restore for cleanup
+	defer func() {
+		if err := os.Chmod(readOnlyDir, 0755); err != nil {
+			t.Logf("failed to restore dir permissions: %v", err)
+		}
+	}() // Restore for cleanup
 
 	cfg := DefaultConfig()
 	err = SaveConfig(cfg, filepath.Join(readOnlyDir, "subdir", "config.yaml"))
@@ -961,7 +1018,11 @@ func TestValidatePath_ExistingSymlink(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create temp dir: %v", err)
 	}
-	defer os.RemoveAll(tmpDir)
+	defer func() {
+		if err := os.RemoveAll(tmpDir); err != nil {
+			t.Logf("failed to remove temp dir: %v", err)
+		}
+	}()
 
 	// Create subdirectory
 	subDir := filepath.Join(tmpDir, "sub")
@@ -994,7 +1055,11 @@ func TestSaveConfig_MarshalComplexConfig(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create temp dir: %v", err)
 	}
-	defer os.RemoveAll(tmpDir)
+	defer func() {
+		if err := os.RemoveAll(tmpDir); err != nil {
+			t.Logf("failed to remove temp dir: %v", err)
+		}
+	}()
 
 	configPath := filepath.Join(tmpDir, "complex.yaml")
 
@@ -1045,7 +1110,11 @@ func TestValidatePath_SymlinkEscape(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create temp dir: %v", err)
 	}
-	defer os.RemoveAll(tmpDir)
+	defer func() {
+		if err := os.RemoveAll(tmpDir); err != nil {
+			t.Logf("failed to remove temp dir: %v", err)
+		}
+	}()
 
 	// Create subdirectories
 	subDir := filepath.Join(tmpDir, "subdir")

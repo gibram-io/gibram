@@ -230,7 +230,11 @@ func TestNewLoggerWithFile(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create logger: %v", err)
 	}
-	defer logger.Close()
+	defer func() {
+		if err := logger.Close(); err != nil {
+			t.Logf("Close error: %v", err)
+		}
+	}()
 
 	logger.Info("test message to file")
 
@@ -260,7 +264,7 @@ func TestNewLoggerFileError(t *testing.T) {
 func TestGlobalLogger(t *testing.T) {
 	// Test global functions don't panic
 	var buf bytes.Buffer
-	
+
 	// Create custom logger
 	logger := &Logger{
 		level:  LevelDebug,
@@ -268,7 +272,7 @@ func TestGlobalLogger(t *testing.T) {
 		output: &buf,
 		fields: make(map[string]interface{}),
 	}
-	
+
 	// Replace global logger
 	globalMu.Lock()
 	oldLogger := globalLogger
@@ -320,6 +324,7 @@ func TestSetLevel(t *testing.T) {
 		t.Error("info should appear after level change")
 	}
 }
+
 // =============================================================================
 // Additional Coverage Tests
 // =============================================================================
@@ -367,7 +372,9 @@ func TestInit(t *testing.T) {
 	}
 
 	// Reset to default
-	Init(DefaultConfig())
+	if err := Init(DefaultConfig()); err != nil {
+		t.Fatalf("Init() reset failed: %v", err)
+	}
 }
 
 func TestInitError(t *testing.T) {
@@ -491,7 +498,11 @@ func TestNewLoggerStderr(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create stderr logger: %v", err)
 	}
-	defer logger.Close()
+	defer func() {
+		if err := logger.Close(); err != nil {
+			t.Logf("Close error: %v", err)
+		}
+	}()
 
 	if logger.output != os.Stderr {
 		t.Error("expected output to be stderr")

@@ -381,7 +381,7 @@ func TestEngine_Query_Basic(t *testing.T) {
 	doc := mustAddDocument(t, e, testSessionID, "ext-doc-1", "test.txt")
 	mustAddTextUnit(t, e, testSessionID, "ext-tu-1", doc.ID, "Test content 1", embedding1, 10)
 	mustAddEntity(t, e, testSessionID, "ext-ent-1", "Entity 1", "test", "Description 1", embedding1)
-	e.AddCommunity(testSessionID, "ext-comm-1", "Community 1", "Summary", "Full", 0, []uint64{1}, []uint64{}, embedding2)
+	mustAddCommunity(t, e, testSessionID, "ext-comm-1", "Community 1", "Summary", "Full", 0, []uint64{1}, []uint64{}, embedding2)
 
 	// Query
 	spec := types.DefaultQuerySpec()
@@ -455,7 +455,10 @@ func TestEngine_Explain(t *testing.T) {
 	spec := types.DefaultQuerySpec()
 	spec.QueryVector = embedding
 
-	result, _ := e.Query(testSessionID, spec)
+	result, err := e.Query(testSessionID, spec)
+	if err != nil {
+		t.Fatalf("Query failed: %v", err)
+	}
 
 	explain, ok := e.Explain(result.QueryID)
 	if !ok {
@@ -662,6 +665,7 @@ func TestEngine_ConcurrentQueries(t *testing.T) {
 
 	var wg sync.WaitGroup
 	const n = 20
+	errCh := make(chan error, n)
 
 	for i := 0; i < n; i++ {
 		wg.Add(1)
@@ -669,11 +673,17 @@ func TestEngine_ConcurrentQueries(t *testing.T) {
 			defer wg.Done()
 			spec := types.DefaultQuerySpec()
 			spec.QueryVector = embedding
-			e.Query(testSessionID, spec)
+			if _, err := e.Query(testSessionID, spec); err != nil {
+				errCh <- err
+			}
 		}()
 	}
 
 	wg.Wait()
+	close(errCh)
+	for err := range errCh {
+		t.Errorf("Concurrent query error: %v", err)
+	}
 }
 
 func itoa(i int) string {
@@ -896,7 +906,7 @@ func TestEngine_Query_AllSearchTypes(t *testing.T) {
 	doc := mustAddDocument(t, e, testSessionID, "ext-doc-1", "test.txt")
 	mustAddTextUnit(t, e, testSessionID, "ext-tu-1", doc.ID, "Content", embedding, 10)
 	mustAddEntity(t, e, testSessionID, "ext-ent-1", "Entity", "test", "Desc", embedding)
-	e.AddCommunity(testSessionID, "ext-comm-1", "Comm", "Summary", "Full", 0, []uint64{}, []uint64{}, embedding)
+	mustAddCommunity(t, e, testSessionID, "ext-comm-1", "Comm", "Summary", "Full", 0, []uint64{}, []uint64{}, embedding)
 
 	// Test each search type
 	searchTypes := []types.SearchType{

@@ -82,13 +82,13 @@ func DefaultConfig() Config {
 
 // Logger is a structured logger
 type Logger struct {
-	mu       sync.Mutex
-	level    Level
-	format   Format
-	output   io.Writer
-	file     *os.File // keep reference for closing
-	fields   map[string]interface{}
-	prefix   string
+	mu     sync.Mutex
+	level  Level
+	format Format
+	output io.Writer
+	file   *os.File // keep reference for closing
+	fields map[string]interface{}
+	prefix string
 }
 
 // logEntry represents a single log entry for JSON output
@@ -256,10 +256,14 @@ func (l *Logger) logJSON(timestamp string, level Level, msg, caller string) {
 
 	data, err := json.Marshal(entry)
 	if err != nil {
-		fmt.Fprintf(l.output, `{"error":"failed to marshal log entry: %s"}`+"\n", err)
+		if _, writeErr := fmt.Fprintf(l.output, `{"error":"failed to marshal log entry: %s"}`+"\n", err); writeErr != nil {
+			return
+		}
 		return
 	}
-	fmt.Fprintln(l.output, string(data))
+	if _, err := fmt.Fprintln(l.output, string(data)); err != nil {
+		return
+	}
 }
 
 func (l *Logger) logText(timestamp string, level Level, msg, caller string) {
@@ -302,7 +306,9 @@ func (l *Logger) logText(timestamp string, level Level, msg, caller string) {
 		}
 	}
 
-	fmt.Fprintln(l.output, sb.String())
+	if _, err := fmt.Fprintln(l.output, sb.String()); err != nil {
+		return
+	}
 }
 
 // Debug logs a debug message
@@ -358,7 +364,9 @@ func Init(cfg Config) error {
 	globalMu.Lock()
 	defer globalMu.Unlock()
 	if globalLogger != nil {
-		globalLogger.Close()
+		if err := globalLogger.Close(); err != nil {
+			return err
+		}
 	}
 	globalLogger = logger
 	return nil

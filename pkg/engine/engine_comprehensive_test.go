@@ -310,7 +310,7 @@ func TestScenario_SnapshotRestore(t *testing.T) {
 	ent1 := mustAddEntity(t, e, testSessionID, "ent-1", "Entity One", "test", "Description", embedding)
 	ent2 := mustAddEntity(t, e, testSessionID, "ent-2", "Entity Two", "test", "Description", embedding)
 	mustAddRelationship(t, e, testSessionID, "rel-1", ent1.ID, ent2.ID, "RELATED", "Desc", 1.0)
-	e.AddCommunity(testSessionID, "comm-1", "Community", "Summary", "Full", 0, []uint64{ent1.ID, ent2.ID}, []uint64{}, embedding)
+	mustAddCommunity(t, e, testSessionID, "comm-1", "Community", "Summary", "Full", 0, []uint64{ent1.ID, ent2.ID}, []uint64{}, embedding)
 
 	// Get original state
 	originalInfo := e.Info()
@@ -360,6 +360,9 @@ func TestScenario_SnapshotRestore(t *testing.T) {
 
 func TestScenario_ConcurrentMultiUser(t *testing.T) {
 	e := NewEngine(testVectorDim)
+	if _, err := e.GetOrCreateSession(testSessionID); err != nil {
+		t.Fatalf("Failed to create session: %v", err)
+	}
 
 	var wg sync.WaitGroup
 	const numUsers = 10
@@ -406,7 +409,9 @@ func TestScenario_ConcurrentMultiUser(t *testing.T) {
 			for j := 0; j < opsPerUser/5; j++ {
 				spec := types.DefaultQuerySpec()
 				spec.QueryVector = randomVector(testVectorDim)
-				e.Query(testSessionID, spec)
+				if _, err := e.Query(testSessionID, spec); err != nil {
+					errCh <- err
+				}
 			}
 		}()
 	}
@@ -497,7 +502,7 @@ func TestEngine_RebuildVectorIndices(t *testing.T) {
 	doc := mustAddDocument(t, e, testSessionID, "doc-1", "file.pdf")
 	mustAddTextUnit(t, e, testSessionID, "tu-1", doc.ID, "Content", embedding, 10)
 	mustAddEntity(t, e, testSessionID, "ent-1", "Entity", "test", "Desc", embedding)
-	e.AddCommunity(testSessionID, "comm-1", "Community", "Summary", "Full", 0, nil, nil, embedding)
+	mustAddCommunity(t, e, testSessionID, "comm-1", "Community", "Summary", "Full", 0, nil, nil, embedding)
 
 	// Rebuild indices
 	err := e.RebuildVectorIndices(testSessionID)
@@ -568,10 +573,12 @@ func TestEngine_SnapshotRestoreVectorMismatch(t *testing.T) {
 	e2 := NewEngine(testVectorDim * 2) // Different dimension
 
 	embedding := randomVector(testVectorDim)
-	e1.AddEntity(testSessionID, "ent-1", "Entity", "test", "Desc", embedding)
+	mustAddEntity(t, e1, testSessionID, "ent-1", "Entity", "test", "Desc", embedding)
 
 	var buf bytes.Buffer
-	e1.Snapshot(&buf)
+	if err := e1.Snapshot(&buf); err != nil {
+		t.Fatalf("Snapshot failed: %v", err)
+	}
 
 	err := e2.Restore(&buf)
 	if err == nil {

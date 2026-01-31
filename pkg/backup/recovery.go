@@ -61,7 +61,9 @@ func (r *Recovery) Plan() (*RecoveryPlan, error) {
 			return nil, err
 		}
 		plan.WALStartLSN = reader.Header().LSN
-		reader.Close()
+		if err := reader.Close(); err != nil {
+			return nil, err
+		}
 	}
 
 	// Find WAL files to replay
@@ -141,7 +143,9 @@ func (r *Recovery) Cleanup(keepSnapshots, keepWALDays int) error {
 	if len(snapshots) > keepSnapshots {
 		for _, path := range snapshots[:len(snapshots)-keepSnapshots] {
 			log.Printf("Cleanup: removing old snapshot %s", path)
-			os.Remove(path)
+			if err := os.Remove(path); err != nil && !os.IsNotExist(err) {
+				return err
+			}
 		}
 	}
 
@@ -159,7 +163,9 @@ func (r *Recovery) Cleanup(keepSnapshots, keepWALDays int) error {
 		}
 		if info.ModTime().Before(cutoff) {
 			log.Printf("Cleanup: removing old WAL %s", path)
-			os.Remove(path)
+			if err := os.Remove(path); err != nil && !os.IsNotExist(err) {
+				return err
+			}
 		}
 	}
 
@@ -178,7 +184,9 @@ func (r *Recovery) Verify() error {
 		if err != nil {
 			return fmt.Errorf("invalid snapshot %s: %w", path, err)
 		}
-		reader.Close()
+		if err := reader.Close(); err != nil {
+			return err
+		}
 	}
 
 	// Verify WAL files can be read
@@ -191,12 +199,16 @@ func (r *Recovery) Verify() error {
 }
 
 // CopyFile copies a file
-func CopyFile(src, dst string) error {
+func CopyFile(src, dst string) (retErr error) {
 	srcFile, err := os.Open(src)
 	if err != nil {
 		return err
 	}
-	defer srcFile.Close()
+	defer func() {
+		if err := srcFile.Close(); err != nil && retErr == nil {
+			retErr = err
+		}
+	}()
 
 	// Create parent directory
 	if err := os.MkdirAll(filepath.Dir(dst), 0755); err != nil {
@@ -207,7 +219,11 @@ func CopyFile(src, dst string) error {
 	if err != nil {
 		return err
 	}
-	defer dstFile.Close()
+	defer func() {
+		if err := dstFile.Close(); err != nil && retErr == nil {
+			retErr = err
+		}
+	}()
 
 	_, err = io.Copy(dstFile, srcFile)
 	return err

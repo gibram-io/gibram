@@ -95,7 +95,9 @@ func (s *EntityStream) Close(err error) {
 	if err != nil {
 		select {
 		case s.errCh <- err:
+			break
 		default:
+			break
 		}
 	}
 
@@ -183,7 +185,9 @@ func (s *RelationshipStream) Close(err error) {
 	if err != nil {
 		select {
 		case s.errCh <- err:
+			break
 		default:
+			break
 		}
 	}
 
@@ -277,7 +281,9 @@ func (s *VectorResultStream) Close(err error) {
 	if err != nil {
 		select {
 		case s.errCh <- err:
+			break
 		default:
+			break
 		}
 	}
 

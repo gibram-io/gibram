@@ -32,7 +32,8 @@ func (vp *VectorPool) Get(dimension int) []float32 {
 		if !ok {
 			pool = &sync.Pool{
 				New: func() interface{} {
-					return make([]float32, dimension)
+					vec := make([]float32, dimension)
+					return &vec
 				},
 			}
 			vp.pools[dimension] = pool
@@ -40,7 +41,8 @@ func (vp *VectorPool) Get(dimension int) []float32 {
 		vp.mu.Unlock()
 	}
 
-	vec := pool.Get().([]float32)
+	vecPtr := pool.Get().(*[]float32)
+	vec := *vecPtr
 	// Clear the vector before reuse
 	for i := range vec {
 		vec[i] = 0
@@ -56,7 +58,8 @@ func (vp *VectorPool) Put(vec []float32) {
 	vp.mu.RUnlock()
 
 	if ok {
-		pool.Put(vec)
+		v := vec
+		pool.Put(&v)
 	}
 }
 
@@ -125,7 +128,7 @@ func (bp *BufferPool) Get(size int) []byte {
 // Put returns a buffer to the pool
 func (bp *BufferPool) Put(buf []byte) {
 	capacity := cap(buf)
-	
+
 	// Determine which pool this belongs to
 	var pool *sync.Pool
 	switch {

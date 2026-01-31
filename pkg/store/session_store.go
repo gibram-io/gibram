@@ -486,7 +486,9 @@ func (s *SessionStore) UpdateEntityDescription(id uint64, description string, em
 	// Update vector index
 	if len(embedding) > 0 && s.entityIndex != nil {
 		s.entityIndex.Remove(id)
-		s.entityIndex.Add(id, embedding)
+		if err := s.entityIndex.Add(id, embedding); err != nil {
+			return false
+		}
 	}
 
 	s.session.Touch()
@@ -1092,19 +1094,25 @@ func (s *SessionStore) RestoreFromSnapshot(snapshot *SessionSnapshot) error {
 	if len(snapshot.TextUnitVectors) > 0 {
 		idx := s.getTextUnitIndex()
 		for id, vec := range snapshot.TextUnitVectors {
-			idx.Add(id, vec)
+			if err := idx.Add(id, vec); err != nil {
+				return err
+			}
 		}
 	}
 	if len(snapshot.EntityVectors) > 0 {
 		idx := s.getEntityIndex()
 		for id, vec := range snapshot.EntityVectors {
-			idx.Add(id, vec)
+			if err := idx.Add(id, vec); err != nil {
+				return err
+			}
 		}
 	}
 	if len(snapshot.CommunityVectors) > 0 {
 		idx := s.getCommunityIndex()
 		for id, vec := range snapshot.CommunityVectors {
-			idx.Add(id, vec)
+			if err := idx.Add(id, vec); err != nil {
+				return err
+			}
 		}
 	}
 

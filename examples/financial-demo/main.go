@@ -242,7 +242,7 @@ var textContents = []struct {
 	{"doc-bi-policy", "chunk-bi-2", "Gubernur Bank Indonesia Perry Warjiyo menyampaikan bahwa stabilitas Rupiah terus terjaga didukung oleh kebijakan stabilisasi nilai tukar yang ditempuh Bank Indonesia, baik melalui intervensi di pasar valas maupun instrumen SRBI dan SVBI. Nilai tukar Rupiah pada Januari 2024 menguat 0,5% dibandingkan level akhir Desember 2023. Penguatan ini ditopang oleh persepsi positif investor terhadap prospek ekonomi Indonesia dan diferensial suku bunga yang menarik."},
 	{"doc-bi-policy", "chunk-bi-3", "Bank Indonesia terus memperkuat infrastruktur sistem pembayaran digital melalui pengembangan QRIS dan BI-FAST. Hingga Desember 2023, jumlah pengguna QRIS mencapai 45 juta dengan 25 juta merchant. Transaksi BI-FAST mencapai Rp 150 triliun per bulan dengan waktu settlement kurang dari 5 detik. Interkoneksi QRIS lintas negara dengan Thailand dan Malaysia telah beroperasi sejak Agustus 2023."},
 
-	// OJK documents  
+	// OJK documents
 	{"doc-ojk-report", "chunk-ojk-1", "Otoritas Jasa Keuangan (OJK) mencatat industri perbankan nasional tetap solid dengan Capital Adequacy Ratio (CAR) perbankan pada level 25,48% per Desember 2023, jauh di atas ketentuan minimum 8%. Non Performing Loan (NPL) gross tercatat 2,35% dan NPL net 0,81%, menunjukkan kualitas kredit yang terjaga baik. Likuiditas perbankan juga memadai dengan Loan to Deposit Ratio (LDR) pada level 84,51%."},
 	{"doc-ojk-report", "chunk-ojk-2", "Sektor fintech peer-to-peer (P2P) lending menunjukkan pertumbuhan signifikan dengan outstanding pinjaman mencapai Rp 57,89 triliun per Desember 2023, naik 15,3% year-on-year. Jumlah peminjam tercatat 19,76 juta entitas dengan tingkat keberhasilan bayar 97% (TKB90). OJK terus memperketat pengawasan terhadap fintech lending untuk melindungi konsumen dan menjaga stabilitas sistem keuangan."},
 	{"doc-ojk-report", "chunk-ojk-3", "Ketua Dewan Komisioner OJK Mahendra Siregar menegaskan komitmen OJK dalam mendorong transformasi digital perbankan. OJK telah menerbitkan izin untuk 5 bank digital baru dan terus mengembangkan regulatory sandbox untuk inovasi keuangan digital. Fokus utama adalah keamanan siber, perlindungan data konsumen, dan inklusi keuangan melalui teknologi."},
@@ -271,7 +271,6 @@ var textContents = []struct {
 
 func main() {
 	flag.Parse()
-	rand.Seed(time.Now().UnixNano())
 
 	fmt.Println("╔════════════════════════════════════════════════════════════════╗")
 	fmt.Println("║        GibRAM Demo - Indonesian Financial Ecosystem            ║")
@@ -290,7 +289,11 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to connect: %v", err)
 	}
-	defer c.Close()
+	defer func() {
+		if err := c.Close(); err != nil {
+			log.Printf("Close error: %v", err)
+		}
+	}()
 
 	if *apiKey != "" {
 		fmt.Println("✓ Authenticated (API key provided)")
@@ -531,7 +534,10 @@ func seedDemoData(c *client.Client, vectorDim int) {
 	fmt.Printf("  • Text Units:    %d\n", totalTextUnits)
 
 	// Final stats
-	info, _ := c.Info()
+	info, err := c.Info()
+	if err != nil {
+		log.Fatalf("Info failed: %v", err)
+	}
 	fmt.Println("\n📈 CURRENT DATABASE STATE")
 	fmt.Printf("  • Documents:     %d\n", info.DocumentCount)
 	fmt.Printf("  • TextUnits:     %d\n", info.TextUnitCount)
@@ -635,7 +641,10 @@ func runQueryDemos(c *client.Client, vectorDim int) {
 	fmt.Println("───────────────────────────────────────────────────────────────")
 	fmt.Println("   Running explain on last query...")
 
-	info, _ := c.Info()
+	info, err := c.Info()
+	if err != nil {
+		log.Fatalf("Info failed: %v", err)
+	}
 	if info.EntityCount > 0 {
 		// Just show we ran explain on a recent query
 		explain, err := c.Explain(1)

@@ -248,7 +248,7 @@ func TestLeiden_ComputeHierarchicalCommunities_Empty(t *testing.T) {
 	leiden := NewLeiden(entityStore, relStore, config)
 	result := leiden.ComputeHierarchicalCommunities()
 
-	if result != nil && len(result) > 0 {
+	if len(result) > 0 {
 		t.Error("ComputeHierarchicalCommunities() on empty graph should return nil or empty")
 	}
 }
@@ -411,7 +411,7 @@ func TestPageRank_Empty(t *testing.T) {
 
 	scores := PageRank([]uint64{}, relStore, 0.85, 10)
 
-	if scores != nil && len(scores) > 0 {
+	if len(scores) > 0 {
 		t.Error("PageRank() on empty graph should return nil or empty")
 	}
 }
@@ -523,7 +523,7 @@ func TestBetweenness_Empty(t *testing.T) {
 
 	scores := Betweenness([]uint64{}, relStore, 0)
 
-	if scores != nil && len(scores) > 0 {
+	if len(scores) > 0 {
 		t.Error("Betweenness() on empty should return nil or empty")
 	}
 }
@@ -753,7 +753,7 @@ func TestLeiden_DisconnectedGraph(t *testing.T) {
 	leiden := NewLeiden(entityStore, relStore, config)
 	result := leiden.ComputeHierarchicalCommunities()
 
-	if result != nil && len(result) > 0 && len(result[0]) < 2 {
+	if len(result) > 0 && len(result[0]) < 2 {
 		t.Error("Disconnected graph should produce at least 2 communities at level 0")
 	}
 }
@@ -807,14 +807,14 @@ func TestLeiden_ComputeCommunities(t *testing.T) {
 	entityStore, relStore, entityIDs := createClusterGraph()
 	config := DefaultLeidenConfig()
 	config.MinCommunitySize = 1
-	
+
 	leiden := NewLeiden(entityStore, relStore, config)
 	result := leiden.ComputeCommunities()
-	
-	if result == nil || len(result) == 0 {
+
+	if len(result) == 0 {
 		t.Skip("ComputeCommunities returned empty (graph might be too small)")
 	}
-	
+
 	// Count total entities in all communities
 	totalEntities := 0
 	entityMap := make(map[uint64]bool)
@@ -824,7 +824,7 @@ func TestLeiden_ComputeCommunities(t *testing.T) {
 			totalEntities++
 		}
 	}
-	
+
 	// Each entity should be in exactly one community
 	if len(entityMap) != len(entityIDs) {
 		t.Errorf("Expected %d unique entities in communities, got %d", len(entityIDs), len(entityMap))
@@ -835,11 +835,11 @@ func TestLeiden_ComputeCommunities_Empty(t *testing.T) {
 	entityStore := newMockEntityStore()
 	relStore := newMockRelationshipStore()
 	config := DefaultLeidenConfig()
-	
+
 	leiden := NewLeiden(entityStore, relStore, config)
 	result := leiden.ComputeCommunities()
-	
-	if result != nil && len(result) > 0 {
+
+	if len(result) > 0 {
 		t.Error("ComputeCommunities on empty graph should return nil or empty")
 	}
 }
@@ -847,12 +847,12 @@ func TestLeiden_ComputeCommunities_Empty(t *testing.T) {
 func TestLeiden_ComputeCommunities_SingleCommunity(t *testing.T) {
 	entityStore := newMockEntityStore()
 	relStore := newMockRelationshipStore()
-	
+
 	// Create fully connected graph - should form single community
 	for i := uint64(1); i <= 4; i++ {
 		entityStore.Add(&types.Entity{ID: i, Title: "E" + itoa(int(i)), Type: "test"})
 	}
-	
+
 	relID := uint64(1)
 	for i := uint64(1); i <= 4; i++ {
 		for j := i + 1; j <= 4; j++ {
@@ -860,14 +860,14 @@ func TestLeiden_ComputeCommunities_SingleCommunity(t *testing.T) {
 			relID++
 		}
 	}
-	
+
 	config := DefaultLeidenConfig()
 	config.MinCommunitySize = 1
 	config.Resolution = 0.5 // Lower resolution tends to create fewer communities
-	
+
 	leiden := NewLeiden(entityStore, relStore, config)
 	result := leiden.ComputeCommunities()
-	
+
 	if result != nil {
 		// Count total entities
 		total := 0
@@ -887,19 +887,19 @@ func TestLeiden_ComputeCommunities_SingleCommunity(t *testing.T) {
 func TestBuildCommunities(t *testing.T) {
 	entityStore, relStore, _ := createClusterGraph()
 	idGen := types.NewIDGenerator()
-	
+
 	// Create some clusters manually
 	clusters := [][]uint64{
 		{1, 2, 3},
 		{4, 5, 6},
 	}
-	
+
 	communities := BuildCommunities(clusters, entityStore, relStore, idGen, 0)
-	
+
 	if len(communities) != 2 {
 		t.Errorf("BuildCommunities returned %d communities, want 2", len(communities))
 	}
-	
+
 	// Verify first community
 	comm1 := communities[0]
 	if comm1.ID == 0 {
@@ -911,7 +911,7 @@ func TestBuildCommunities(t *testing.T) {
 	if comm1.Level != 0 {
 		t.Errorf("Community 1 level should be 0, got %d", comm1.Level)
 	}
-	
+
 	// Verify community has title
 	if comm1.Title == "" {
 		t.Error("Community should have a title built from entity titles")
@@ -922,9 +922,9 @@ func TestBuildCommunities_Empty(t *testing.T) {
 	entityStore := newMockEntityStore()
 	relStore := newMockRelationshipStore()
 	idGen := types.NewIDGenerator()
-	
+
 	communities := BuildCommunities([][]uint64{}, entityStore, relStore, idGen, 0)
-	
+
 	if len(communities) != 0 {
 		t.Errorf("BuildCommunities with empty clusters should return empty, got %d", len(communities))
 	}
@@ -933,17 +933,17 @@ func TestBuildCommunities_Empty(t *testing.T) {
 func TestBuildCommunities_WithEmptyClusters(t *testing.T) {
 	entityStore, relStore, _ := createClusterGraph()
 	idGen := types.NewIDGenerator()
-	
+
 	// Mix of empty and non-empty clusters
 	clusters := [][]uint64{
 		{1, 2},
-		{},          // Empty
+		{}, // Empty
 		{4, 5, 6},
-		{},          // Empty
+		{}, // Empty
 	}
-	
+
 	communities := BuildCommunities(clusters, entityStore, relStore, idGen, 0)
-	
+
 	// Should only create communities for non-empty clusters
 	if len(communities) != 2 {
 		t.Errorf("BuildCommunities should skip empty clusters, got %d communities", len(communities))
@@ -954,26 +954,26 @@ func TestBuildCommunities_RelationshipIDs(t *testing.T) {
 	entityStore := newMockEntityStore()
 	relStore := newMockRelationshipStore()
 	idGen := types.NewIDGenerator()
-	
+
 	// Create entities
 	for i := uint64(1); i <= 4; i++ {
 		entityStore.Add(&types.Entity{ID: i, Title: "E" + itoa(int(i)), Type: "test"})
 	}
-	
+
 	// Create relationships within cluster
 	relStore.Add(&types.Relationship{ID: 1, SourceID: 1, TargetID: 2, Type: "INTERNAL"})
 	relStore.Add(&types.Relationship{ID: 2, SourceID: 2, TargetID: 3, Type: "INTERNAL"})
 	// External relationship (should not be included)
 	relStore.Add(&types.Relationship{ID: 3, SourceID: 3, TargetID: 4, Type: "EXTERNAL"})
-	
+
 	clusters := [][]uint64{{1, 2, 3}}
-	
+
 	communities := BuildCommunities(clusters, entityStore, relStore, idGen, 0)
-	
+
 	if len(communities) != 1 {
 		t.Fatalf("Expected 1 community, got %d", len(communities))
 	}
-	
+
 	// Should include internal relationships
 	if len(communities[0].RelationshipIDs) < 1 {
 		t.Error("Community should have internal relationship IDs")
@@ -983,15 +983,15 @@ func TestBuildCommunities_RelationshipIDs(t *testing.T) {
 func TestBuildCommunities_DifferentLevels(t *testing.T) {
 	entityStore, relStore, _ := createClusterGraph()
 	idGen := types.NewIDGenerator()
-	
+
 	clusters := [][]uint64{{1, 2, 3}}
-	
+
 	// Build at level 0
 	comms0 := BuildCommunities(clusters, entityStore, relStore, idGen, 0)
 	if comms0[0].Level != 0 {
 		t.Errorf("Expected level 0, got %d", comms0[0].Level)
 	}
-	
+
 	// Build at level 1
 	comms1 := BuildCommunities(clusters, entityStore, relStore, idGen, 1)
 	if comms1[0].Level != 1 {
@@ -1006,7 +1006,7 @@ func TestBuildCommunities_DifferentLevels(t *testing.T) {
 func TestBuildHierarchicalCommunities(t *testing.T) {
 	entityStore, relStore, _ := createClusterGraph()
 	idGen := types.NewIDGenerator()
-	
+
 	// Create hierarchical structure
 	hierarchical := [][]HierarchicalCommunity{
 		// Level 0
@@ -1019,24 +1019,25 @@ func TestBuildHierarchicalCommunities(t *testing.T) {
 			{EntityIDs: []uint64{1, 2, 3, 4, 5, 6}},
 		},
 	}
-	
+
 	communities := BuildHierarchicalCommunities(hierarchical, entityStore, relStore, idGen)
-	
+
 	if len(communities) != 3 { // 2 from level 0 + 1 from level 1
 		t.Errorf("Expected 3 communities, got %d", len(communities))
 	}
-	
+
 	// Verify levels
 	level0Count := 0
 	level1Count := 0
 	for _, c := range communities {
-		if c.Level == 0 {
+		switch c.Level {
+		case 0:
 			level0Count++
-		} else if c.Level == 1 {
+		case 1:
 			level1Count++
 		}
 	}
-	
+
 	if level0Count != 2 {
 		t.Errorf("Expected 2 level 0 communities, got %d", level0Count)
 	}
@@ -1049,9 +1050,9 @@ func TestBuildHierarchicalCommunities_Empty(t *testing.T) {
 	entityStore := newMockEntityStore()
 	relStore := newMockRelationshipStore()
 	idGen := types.NewIDGenerator()
-	
+
 	communities := BuildHierarchicalCommunities(nil, entityStore, relStore, idGen)
-	
+
 	if len(communities) != 0 {
 		t.Errorf("Expected 0 communities, got %d", len(communities))
 	}
@@ -1060,7 +1061,7 @@ func TestBuildHierarchicalCommunities_Empty(t *testing.T) {
 func TestBuildHierarchicalCommunities_WithEmptyCommunities(t *testing.T) {
 	entityStore, relStore, _ := createClusterGraph()
 	idGen := types.NewIDGenerator()
-	
+
 	hierarchical := [][]HierarchicalCommunity{
 		{
 			{EntityIDs: []uint64{1, 2}},
@@ -1068,38 +1069,12 @@ func TestBuildHierarchicalCommunities_WithEmptyCommunities(t *testing.T) {
 			{EntityIDs: []uint64{4, 5}},
 		},
 	}
-	
+
 	communities := BuildHierarchicalCommunities(hierarchical, entityStore, relStore, idGen)
-	
+
 	// Should skip empty community
 	if len(communities) != 2 {
 		t.Errorf("Expected 2 communities (skipping empty), got %d", len(communities))
-	}
-}
-
-// =============================================================================
-// Utility Function Tests
-// =============================================================================
-
-func TestMinInt(t *testing.T) {
-	tests := []struct {
-		a, b, want int
-	}{
-		{1, 2, 1},
-		{2, 1, 1},
-		{0, 0, 0},
-		{-1, 1, -1},
-		{100, 50, 50},
-	}
-	
-	// minInt is unexported, test indirectly through BFS maxNodes limit
-	_ = tests // tests define expected behavior
-	
-	// Test indirectly through BFS with maxNodes
-	_, relStore, _ := createTestGraph()
-	nodes, _, _ := BFSTraversal([]uint64{1}, relStore, 10, 2)
-	if len(nodes) > 2 {
-		t.Error("BFSTraversal should respect maxNodes limit")
 	}
 }
 
@@ -1110,12 +1085,12 @@ func TestMinInt(t *testing.T) {
 func TestLeiden_LargeGraph(t *testing.T) {
 	entityStore := newMockEntityStore()
 	relStore := newMockRelationshipStore()
-	
+
 	// Create a larger graph with 50 nodes in 5 clusters
 	for i := uint64(1); i <= 50; i++ {
 		entityStore.Add(&types.Entity{ID: i, Title: "E" + itoa(int(i)), Type: "test"})
 	}
-	
+
 	relID := uint64(1)
 	// Create 5 clusters of 10 nodes each
 	for cluster := 0; cluster < 5; cluster++ {
@@ -1133,7 +1108,7 @@ func TestLeiden_LargeGraph(t *testing.T) {
 			}
 		}
 	}
-	
+
 	// Add weak inter-cluster connections
 	for i := 0; i < 4; i++ {
 		relStore.Add(&types.Relationship{
@@ -1145,14 +1120,14 @@ func TestLeiden_LargeGraph(t *testing.T) {
 		})
 		relID++
 	}
-	
+
 	config := DefaultLeidenConfig()
 	config.MinCommunitySize = 3
-	
+
 	leiden := NewLeiden(entityStore, relStore, config)
 	result := leiden.ComputeCommunities()
-	
-	if result != nil && len(result) > 0 {
+
+	if len(result) > 0 {
 		// Count total entities
 		total := 0
 		for _, comm := range result {
@@ -1166,30 +1141,30 @@ func TestLeiden_LargeGraph(t *testing.T) {
 
 func TestConnectedComponents_LargeGraph(t *testing.T) {
 	relStore := newMockRelationshipStore()
-	
+
 	// Create 3 separate connected components
 	// Component 1: nodes 1-10
 	for i := uint64(1); i < 10; i++ {
 		relStore.Add(&types.Relationship{ID: i, SourceID: i, TargetID: i + 1, Type: "LINK"})
 	}
-	
+
 	// Component 2: nodes 11-20
 	for i := uint64(11); i < 20; i++ {
 		relStore.Add(&types.Relationship{ID: i, SourceID: i, TargetID: i + 1, Type: "LINK"})
 	}
-	
+
 	// Component 3: nodes 21-30
 	for i := uint64(21); i < 30; i++ {
 		relStore.Add(&types.Relationship{ID: i, SourceID: i, TargetID: i + 1, Type: "LINK"})
 	}
-	
+
 	nodeIDs := make([]uint64, 30)
 	for i := range nodeIDs {
 		nodeIDs[i] = uint64(i + 1)
 	}
-	
+
 	components := ConnectedComponents(nodeIDs, relStore)
-	
+
 	if len(components) != 3 {
 		t.Errorf("Expected 3 connected components, got %d", len(components))
 	}
@@ -1197,19 +1172,19 @@ func TestConnectedComponents_LargeGraph(t *testing.T) {
 
 func TestPageRank_IsolatedNodes(t *testing.T) {
 	relStore := newMockRelationshipStore()
-	
+
 	// Only relationship between 1 and 2
 	relStore.Add(&types.Relationship{ID: 1, SourceID: 1, TargetID: 2, Type: "LINK"})
-	
+
 	// Node 3 is isolated
 	entityIDs := []uint64{1, 2, 3}
-	
+
 	scores := PageRank(entityIDs, relStore, 0.85, 10)
-	
+
 	if scores == nil {
 		t.Fatal("PageRank should not return nil")
 	}
-	
+
 	// All nodes should have some score
 	for _, eid := range entityIDs {
 		if scores[eid] <= 0 {
@@ -1220,14 +1195,14 @@ func TestPageRank_IsolatedNodes(t *testing.T) {
 
 func TestBetweenness_AllPairs(t *testing.T) {
 	_, relStore, entityIDs := createTestGraph()
-	
+
 	// Sample size 0 or negative means all pairs
 	scores := Betweenness(entityIDs, relStore, 0)
-	
+
 	if scores == nil {
 		t.Fatal("Betweenness should not return nil")
 	}
-	
+
 	if len(scores) != len(entityIDs) {
 		t.Errorf("Betweenness returned %d scores, want %d", len(scores), len(entityIDs))
 	}
@@ -1235,22 +1210,22 @@ func TestBetweenness_AllPairs(t *testing.T) {
 
 func TestBFSTraversal_NoRelationships(t *testing.T) {
 	relStore := newMockRelationshipStore()
-	
+
 	// No relationships, just seed nodes
 	nodeIDs, distances, steps := BFSTraversal([]uint64{1, 2, 3}, relStore, 10, 100)
-	
+
 	// Should return just the seed nodes
 	if len(nodeIDs) != 3 {
 		t.Errorf("BFSTraversal with no relationships should return only seeds, got %d nodes", len(nodeIDs))
 	}
-	
+
 	// All seeds should have distance 0
 	for _, nid := range nodeIDs {
 		if distances[nid] != 0 {
 			t.Errorf("Seed node %d should have distance 0", nid)
 		}
 	}
-	
+
 	// No traversal steps without relationships
 	if len(steps) != 0 {
 		t.Errorf("BFSTraversal with no relationships should have no steps, got %d", len(steps))
@@ -1259,19 +1234,19 @@ func TestBFSTraversal_NoRelationships(t *testing.T) {
 
 func TestBFSTraversal_Cycle(t *testing.T) {
 	relStore := newMockRelationshipStore()
-	
+
 	// Create a cycle: 1 -> 2 -> 3 -> 1
 	relStore.Add(&types.Relationship{ID: 1, SourceID: 1, TargetID: 2, Type: "NEXT"})
 	relStore.Add(&types.Relationship{ID: 2, SourceID: 2, TargetID: 3, Type: "NEXT"})
 	relStore.Add(&types.Relationship{ID: 3, SourceID: 3, TargetID: 1, Type: "NEXT"})
-	
+
 	nodeIDs, distances, _ := BFSTraversal([]uint64{1}, relStore, 10, 100)
-	
+
 	// Should visit all 3 nodes
 	if len(nodeIDs) != 3 {
 		t.Errorf("BFSTraversal on cycle should visit all 3 nodes, got %d", len(nodeIDs))
 	}
-	
+
 	// Node 1 should have distance 0
 	if distances[1] != 0 {
 		t.Errorf("Seed node should have distance 0, got %d", distances[1])

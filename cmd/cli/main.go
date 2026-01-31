@@ -41,12 +41,15 @@ func main() {
 		fmt.Printf("Error: %v\n", err)
 		os.Exit(1)
 	}
-	defer c.Close()
+	defer func() {
+		if err := c.Close(); err != nil {
+			fmt.Printf("Close error: %v\n", err)
+		}
+	}()
 
 	fmt.Printf("Connected to %s\n\n", *host)
 
 	reader := bufio.NewReader(os.Stdin)
-	rand.Seed(time.Now().UnixNano())
 
 	for {
 		fmt.Printf("gibram %s> ", *host)

@@ -136,9 +136,9 @@ func (rb *RelationshipBatch) Flush() []*types.Relationship {
 
 // VectorBatch batches vector insertions for the HNSW index
 type VectorBatch struct {
-	vectors  []VectorEntry
-	mu       sync.Mutex
-	maxSize  int
+	vectors []VectorEntry
+	mu      sync.Mutex
+	maxSize int
 }
 
 // VectorEntry represents a vector to be inserted
@@ -270,7 +270,7 @@ func (bp *BatchProcessor) FlushEntities() error {
 	defer bp.mu.Unlock()
 
 	entities := bp.entityBatch.Flush()
-	if entities == nil || len(entities) == 0 {
+	if len(entities) == 0 {
 		return nil
 	}
 
@@ -287,7 +287,7 @@ func (bp *BatchProcessor) FlushRelationships() error {
 	defer bp.mu.Unlock()
 
 	rels := bp.relationshipBatch.Flush()
-	if rels == nil || len(rels) == 0 {
+	if len(rels) == 0 {
 		return nil
 	}
 
@@ -304,7 +304,7 @@ func (bp *BatchProcessor) FlushVectors() error {
 	defer bp.mu.Unlock()
 
 	vectors := bp.vectorBatch.Flush()
-	if vectors == nil || len(vectors) == 0 {
+	if len(vectors) == 0 {
 		return nil
 	}
 

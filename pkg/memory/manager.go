@@ -4,7 +4,6 @@ package memory
 import (
 	"runtime"
 	"sync"
-	"sync/atomic"
 	"time"
 )
 
@@ -12,14 +11,10 @@ import (
 type Manager struct {
 	config *Config
 
-	// Memory tracking
-	allocatedBytes atomic.Int64
-	itemCount      atomic.Int64
-
 	// Caches
-	entityCache   *LRUCache
-	textUnitCache *LRUCache
-	documentCache *LRUCache
+	entityCache    *LRUCache
+	textUnitCache  *LRUCache
+	documentCache  *LRUCache
 	communityCache *LRUCache
 
 	// Control
@@ -35,11 +30,11 @@ func NewManager(config *Config) *Manager {
 	}
 
 	m := &Manager{
-		config:        config,
-		stopCh:        make(chan struct{}),
-		entityCache:   NewLRUCache(config.MaxItems / 4),
-		textUnitCache: NewLRUCache(config.MaxItems / 4),
-		documentCache: NewLRUCache(config.MaxItems / 4),
+		config:         config,
+		stopCh:         make(chan struct{}),
+		entityCache:    NewLRUCache(config.MaxItems / 4),
+		textUnitCache:  NewLRUCache(config.MaxItems / 4),
+		documentCache:  NewLRUCache(config.MaxItems / 4),
 		communityCache: NewLRUCache(config.MaxItems / 4),
 	}
 
@@ -79,11 +74,11 @@ func (m *Manager) checkMemoryPressure() {
 	runtime.ReadMemStats(&memStats)
 
 	currentUsage := int64(memStats.Alloc)
-	
+
 	// Check if we're using too much memory
 	if m.config.MaxMemoryBytes > 0 {
 		usageRatio := float64(currentUsage) / float64(m.config.MaxMemoryBytes)
-		
+
 		if usageRatio >= 0.95 {
 			// Critical: evict 20% immediately
 			m.evictLRU(0.2)
@@ -149,16 +144,16 @@ func (m *Manager) Stats() MemoryStats {
 	commHits, commMisses := m.communityCache.Stats()
 
 	return MemoryStats{
-		AllocatedBytes:   int64(memStats.Alloc),
-		TotalAllocBytes:  int64(memStats.TotalAlloc),
-		SystemBytes:      int64(memStats.Sys),
-		NumGC:            memStats.NumGC,
-		EntityCacheLen:   m.entityCache.Len(),
-		TextUnitCacheLen: m.textUnitCache.Len(),
-		DocumentCacheLen: m.documentCache.Len(),
+		AllocatedBytes:    int64(memStats.Alloc),
+		TotalAllocBytes:   int64(memStats.TotalAlloc),
+		SystemBytes:       int64(memStats.Sys),
+		NumGC:             memStats.NumGC,
+		EntityCacheLen:    m.entityCache.Len(),
+		TextUnitCacheLen:  m.textUnitCache.Len(),
+		DocumentCacheLen:  m.documentCache.Len(),
 		CommunityCacheLen: m.communityCache.Len(),
-		CacheHits:        entityHits + textUnitHits + docHits + commHits,
-		CacheMisses:      entityMisses + textUnitMisses + docMisses + commMisses,
+		CacheHits:         entityHits + textUnitHits + docHits + commHits,
+		CacheMisses:       entityMisses + textUnitMisses + docMisses + commMisses,
 	}
 }
 

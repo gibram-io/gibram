@@ -41,3 +41,12 @@ func mustAddRelationship(tb testing.TB, e *Engine, sessionID, extID string, sour
 	}
 	return rel
 }
+
+func mustAddCommunity(tb testing.TB, e *Engine, sessionID, extID, title, summary, fullContent string, level int, entityIDs, relIDs []uint64, embedding []float32) *types.Community {
+	tb.Helper()
+	comm, err := e.AddCommunity(sessionID, extID, title, summary, fullContent, level, entityIDs, relIDs, embedding)
+	if err != nil {
+		tb.Fatalf("AddCommunity() error: %v", err)
+	}
+	return comm
+}

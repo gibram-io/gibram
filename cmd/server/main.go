@@ -2,7 +2,6 @@
 package main
 
 import (
-	"bytes"
 	"compress/gzip"
 	"context"
 	"flag"
@@ -112,10 +111,11 @@ func main() {
 		usedMB := usedBytes / (1024 * 1024)
 		maxMB := maxBytes / (1024 * 1024)
 		memLog := logging.WithPrefix("memory")
-		if level == "critical" {
+		switch level {
+		case "critical":
 			memLog.Error("CRITICAL: Memory usage %dMB / %dMB (%.1f%%)", usedMB, maxMB, float64(usedBytes)/float64(maxBytes)*100)
 			memTracker.ForceGC()
-		} else if level == "warning" {
+		case "warning":
 			memLog.Warn("Memory usage %dMB / %dMB (%.1f%%)", usedMB, maxMB, float64(usedBytes)/float64(maxBytes)*100)
 		}
 		// Record to metrics
@@ -133,11 +133,8 @@ func main() {
 			case <-memStopCh:
 				return
 			case <-ticker.C:
-				usedBytes, level := memTracker.Check()
+				usedBytes, _ := memTracker.Check()
 				metricsCollector.Gauge("memory.used_bytes", usedBytes)
-				if level == "ok" {
-					// Periodic log every 5 minutes worth of checks
-				}
 			}
 		}
 	}()
@@ -186,11 +183,19 @@ func main() {
 		if err != nil {
 			return err
 		}
-		defer f.Close()
+		defer func() {
+			if err := f.Close(); err != nil {
+				log.Warn("Failed to close snapshot file: %v", err)
+			}
+		}()
 
 		// Use gzip compression
 		gw := gzip.NewWriter(f)
-		defer gw.Close()
+		defer func() {
+			if err := gw.Close(); err != nil {
+				log.Warn("Failed to close snapshot gzip writer: %v", err)
+			}
+		}()
 
 		// Serialize engine state
 		info := eng.Info()
@@ -220,7 +225,11 @@ func main() {
 		if err != nil {
 			return err
 		}
-		defer f.Close()
+		defer func() {
+			if err := f.Close(); err != nil {
+				log.Warn("Failed to close snapshot file: %v", err)
+			}
+		}()
 
 		// Detect if gzipped
 		var reader io.Reader
@@ -228,7 +237,9 @@ func main() {
 		if _, err := f.Read(buf); err != nil {
 			return err
 		}
-		f.Seek(0, 0)
+		if _, err := f.Seek(0, 0); err != nil {
+			return err
+		}
 
 		if buf[0] == 0x1f && buf[1] == 0x8b {
 			// Gzip magic number
@@ -236,7 +247,11 @@ func main() {
 			if err != nil {
 				return err
 			}
-			defer gr.Close()
+			defer func() {
+				if err := gr.Close(); err != nil {
+					log.Warn("Failed to close snapshot gzip reader: %v", err)
+				}
+			}()
 			reader = gr
 		} else {
 			reader = f
@@ -322,5 +337,4 @@ func main() {
 
 	// Suppress unused variable warnings
 	_ = recovery
-	_ = bytes.Buffer{}
 }
