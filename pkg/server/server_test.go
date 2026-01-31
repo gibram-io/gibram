@@ -588,6 +588,7 @@ func TestServerIntegration_Health(t *testing.T) {
 		t.Errorf("Expected 'ok' or 'healthy', got '%s'", healthResp.Status)
 	}
 }
+
 // =============================================================================
 // Entity Operations Integration Tests
 // =============================================================================
@@ -1962,6 +1963,76 @@ func TestServerIntegration_MGetEntities(t *testing.T) {
 	}
 }
 
+func TestServerIntegration_ListEntities(t *testing.T) {
+	srv, addr := createTestServer(t)
+	defer srv.Stop()
+
+	conn, err := net.DialTimeout("tcp", addr, 5*time.Second)
+	if err != nil {
+		t.Fatalf("Failed to connect: %v", err)
+	}
+	defer conn.Close()
+
+	for i := 0; i < 5; i++ {
+		addReq := &pb.AddEntityRequest{
+			ExternalId: fmt.Sprintf("list-ent-%d", i+1),
+			Title:      fmt.Sprintf("List Entity %d", i+1),
+			Type:       "test",
+		}
+		resp, err := sendCommand(conn, pb.CommandType_CMD_ADD_ENTITY, addReq)
+		if err != nil {
+			t.Fatalf("AddEntity failed: %v", err)
+		}
+		if resp.CmdType == pb.CommandType_CMD_ERROR {
+			var errResp pb.Error
+			proto.Unmarshal(resp.Payload, &errResp)
+			t.Fatalf("AddEntity returned error: %s", errResp.Message)
+		}
+	}
+
+	var allIDs []uint64
+	var cursor uint64
+	for page := 0; page < 3; page++ {
+		listReq := &pb.ListEntitiesRequest{Cursor: cursor, Limit: 2}
+		resp, err := sendCommand(conn, pb.CommandType_CMD_LIST_ENTITIES, listReq)
+		if err != nil {
+			t.Fatalf("List entities failed: %v", err)
+		}
+		if resp.CmdType == pb.CommandType_CMD_ERROR {
+			var errResp pb.Error
+			proto.Unmarshal(resp.Payload, &errResp)
+			t.Fatalf("List entities returned error: %s", errResp.Message)
+		}
+
+		var listResp pb.EntitiesResponse
+		if err := proto.Unmarshal(resp.Payload, &listResp); err != nil {
+			t.Fatalf("Failed to unmarshal list entities response: %v", err)
+		}
+		if len(listResp.Entities) == 0 {
+			t.Fatalf("Expected entities on page %d", page+1)
+		}
+		if listResp.NextCursor != 0 && listResp.NextCursor != listResp.Entities[len(listResp.Entities)-1].Id {
+			t.Fatalf("Expected next cursor to match last entity ID")
+		}
+
+		for i := range listResp.Entities {
+			allIDs = append(allIDs, listResp.Entities[i].Id)
+			if i > 0 && listResp.Entities[i-1].Id >= listResp.Entities[i].Id {
+				t.Fatalf("Expected ascending IDs on page %d", page+1)
+			}
+		}
+
+		cursor = listResp.NextCursor
+		if cursor == 0 {
+			break
+		}
+	}
+
+	if len(allIDs) != 5 {
+		t.Fatalf("Expected 5 entities total, got %d", len(allIDs))
+	}
+}
+
 func TestServerIntegration_MSetDocuments(t *testing.T) {
 	srv, addr := createTestServer(t)
 	defer srv.Stop()
@@ -2243,6 +2314,107 @@ func TestServerIntegration_MGetRelationships(t *testing.T) {
 		var errResp pb.Error
 		proto.Unmarshal(mgetResp.Payload, &errResp)
 		t.Fatalf("MGet relationships returned error: %s", errResp.Message)
+	}
+}
+
+func TestServerIntegration_ListRelationships(t *testing.T) {
+	srv, addr := createTestServer(t)
+	defer srv.Stop()
+
+	conn, err := net.DialTimeout("tcp", addr, 5*time.Second)
+	if err != nil {
+		t.Fatalf("Failed to connect: %v", err)
+	}
+	defer conn.Close()
+
+	embedding := make([]float32, testVectorDim)
+	ent1Req := &pb.AddEntityRequest{
+		ExternalId: "list-rel-ent1",
+		Title:      "List Rel Entity 1",
+		Type:       "test",
+		Embedding:  embedding,
+	}
+	resp1, _ := sendCommand(conn, pb.CommandType_CMD_ADD_ENTITY, ent1Req)
+	var ent1ID pb.OkWithID
+	proto.Unmarshal(resp1.Payload, &ent1ID)
+
+	ent2Req := &pb.AddEntityRequest{
+		ExternalId: "list-rel-ent2",
+		Title:      "List Rel Entity 2",
+		Type:       "test",
+		Embedding:  embedding,
+	}
+	resp2, _ := sendCommand(conn, pb.CommandType_CMD_ADD_ENTITY, ent2Req)
+	var ent2ID pb.OkWithID
+	proto.Unmarshal(resp2.Payload, &ent2ID)
+
+	ent3Req := &pb.AddEntityRequest{
+		ExternalId: "list-rel-ent3",
+		Title:      "List Rel Entity 3",
+		Type:       "test",
+		Embedding:  embedding,
+	}
+	resp3, _ := sendCommand(conn, pb.CommandType_CMD_ADD_ENTITY, ent3Req)
+	var ent3ID pb.OkWithID
+	proto.Unmarshal(resp3.Payload, &ent3ID)
+
+	relReqs := []*pb.AddRelationshipRequest{
+		{ExternalId: "list-rel-1", SourceId: ent1ID.Id, TargetId: ent2ID.Id, Type: "RELATED", Description: "Desc", Weight: 1.0},
+		{ExternalId: "list-rel-2", SourceId: ent2ID.Id, TargetId: ent3ID.Id, Type: "RELATED", Description: "Desc", Weight: 1.0},
+		{ExternalId: "list-rel-3", SourceId: ent3ID.Id, TargetId: ent1ID.Id, Type: "RELATED", Description: "Desc", Weight: 1.0},
+	}
+	for _, relReq := range relReqs {
+		resp, err := sendCommand(conn, pb.CommandType_CMD_ADD_RELATIONSHIP, relReq)
+		if err != nil {
+			t.Fatalf("AddRelationship failed: %v", err)
+		}
+		if resp.CmdType == pb.CommandType_CMD_ERROR {
+			var errResp pb.Error
+			proto.Unmarshal(resp.Payload, &errResp)
+			t.Fatalf("AddRelationship returned error: %s", errResp.Message)
+		}
+	}
+
+	var allIDs []uint64
+	var cursor uint64
+	for page := 0; page < 2; page++ {
+		listReq := &pb.ListRelationshipsRequest{Cursor: cursor, Limit: 2}
+		resp, err := sendCommand(conn, pb.CommandType_CMD_LIST_RELATIONSHIPS, listReq)
+		if err != nil {
+			t.Fatalf("List relationships failed: %v", err)
+		}
+		if resp.CmdType == pb.CommandType_CMD_ERROR {
+			var errResp pb.Error
+			proto.Unmarshal(resp.Payload, &errResp)
+			t.Fatalf("List relationships returned error: %s", errResp.Message)
+		}
+
+		var listResp pb.RelationshipsResponse
+		if err := proto.Unmarshal(resp.Payload, &listResp); err != nil {
+			t.Fatalf("Failed to unmarshal list relationships response: %v", err)
+		}
+		if len(listResp.Relationships) == 0 {
+			t.Fatalf("Expected relationships on page %d", page+1)
+		}
+		if listResp.NextCursor != 0 && listResp.NextCursor != listResp.Relationships[len(listResp.Relationships)-1].Id {
+			t.Fatalf("Expected next cursor to match last relationship ID")
+		}
+
+		for i := range listResp.Relationships {
+			allIDs = append(allIDs, listResp.Relationships[i].Id)
+			if i > 0 && listResp.Relationships[i-1].Id >= listResp.Relationships[i].Id {
+				t.Fatalf("Expected ascending IDs on page %d", page+1)
+			}
+		}
+
+		cursor = listResp.NextCursor
+		if cursor == 0 {
+			break
+		}
+	}
+
+	if len(allIDs) != 3 {
+		t.Fatalf("Expected 3 relationships total, got %d", len(allIDs))
 	}
 }
 

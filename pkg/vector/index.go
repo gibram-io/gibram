@@ -30,7 +30,7 @@ type Index interface {
 	Dimension() int
 	Save(w io.Writer) error
 	Load(r io.Reader) error
-	
+
 	// Rebuild functionality
 	GetAllVectors() map[uint64][]float32 // Get raw vectors for rebuild
 	Rebuild() error                      // Rebuild index from scratch
@@ -392,13 +392,13 @@ func (h *HNSWIndex) Remove(id uint64) bool {
 	for level, friends := range node.friends {
 		// Collect all neighbors that were connected to this node
 		affectedNeighbors := make(map[uint64]bool)
-		
+
 		for _, friendID := range friends {
 			friend := h.nodes[friendID]
 			if friend == nil || level >= len(friend.friends) {
 				continue
 			}
-			
+
 			// Remove id from friend's connections
 			newFriends := make([]uint64, 0, len(friend.friends[level]))
 			for _, fid := range friend.friends[level] {
@@ -409,7 +409,7 @@ func (h *HNSWIndex) Remove(id uint64) bool {
 			friend.friends[level] = newFriends
 			affectedNeighbors[friendID] = true
 		}
-		
+
 		// Reconnect affected neighbors to maintain graph connectivity
 		// This prevents graph fragmentation after deletion
 		h.reconnectNeighbors(level, affectedNeighbors, id)
@@ -487,7 +487,7 @@ func (h *HNSWIndex) reconnectNeighbors(level int, affected map[uint64]bool, dele
 
 			// Select best candidates based on similarity
 			selected := h.selectNeighborsForReconnect(neighbor.vector, candidates, maxFriends-currentFriendCount)
-			
+
 			// Add bidirectional connections
 			for _, selectedID := range selected {
 				selectedNode := h.nodes[selectedID]
@@ -497,14 +497,14 @@ func (h *HNSWIndex) reconnectNeighbors(level int, affected map[uint64]bool, dele
 
 				// Add connection neighbor -> selected
 				neighbor.friends[level] = append(neighbor.friends[level], selectedID)
-				
+
 				// Add connection selected -> neighbor (if has room)
 				selectedFriendCount := len(selectedNode.friends[level])
 				selectedMaxFriends := h.config.M
 				if level == 0 {
 					selectedMaxFriends = h.config.M * 2
 				}
-				
+
 				if selectedFriendCount < selectedMaxFriends {
 					selectedNode.friends[level] = append(selectedNode.friends[level], neighborID)
 				}
@@ -669,12 +669,12 @@ func (h *HNSWIndex) Load(r io.Reader) error {
 			if err := binary.Read(r, binary.LittleEndian, &friendCount); err != nil {
 				return fmt.Errorf("failed to read friend count at level %d: %w", l, err)
 			}
-			
+
 			// Validate friend count to prevent allocation attacks
 			if friendCount < 0 || friendCount > 10000 {
 				return fmt.Errorf("invalid friend count: %d", friendCount)
 			}
-			
+
 			node.friends[l] = make([]uint64, friendCount)
 			if friendCount > 0 {
 				if err := binary.Read(r, binary.LittleEndian, node.friends[l]); err != nil {
@@ -693,7 +693,7 @@ func (h *HNSWIndex) Load(r io.Reader) error {
 func (h *HNSWIndex) GetAllVectors() map[uint64][]float32 {
 	h.mu.RLock()
 	defer h.mu.RUnlock()
-	
+
 	result := make(map[uint64][]float32, len(h.nodes))
 	for id, node := range h.nodes {
 		copied := make([]float32, len(node.vector))
@@ -708,11 +708,11 @@ func (h *HNSWIndex) GetAllVectors() map[uint64][]float32 {
 func (h *HNSWIndex) Rebuild() error {
 	h.mu.Lock()
 	defer h.mu.Unlock()
-	
+
 	if len(h.nodes) == 0 {
 		return nil
 	}
-	
+
 	// Extract all vectors (snapshot for transaction safety)
 	vectors := make(map[uint64][]float32, len(h.nodes))
 	for id, node := range h.nodes {
@@ -721,7 +721,7 @@ func (h *HNSWIndex) Rebuild() error {
 		copy(vectorCopy, node.vector)
 		vectors[id] = vectorCopy
 	}
-	
+
 	// Create backup of current graph state for rollback
 	backup := &struct {
 		nodes    map[uint64]*hnswNode
@@ -732,12 +732,12 @@ func (h *HNSWIndex) Rebuild() error {
 		entryID:  h.entryID,
 		maxLevel: h.maxLevel,
 	}
-	
+
 	// Initialize new graph structure
 	h.nodes = make(map[uint64]*hnswNode)
 	h.entryID = 0
 	h.maxLevel = -1
-	
+
 	// Re-add all vectors with error handling
 	for id, vector := range vectors {
 		// Create new node with random level
@@ -751,7 +751,7 @@ func (h *HNSWIndex) Rebuild() error {
 		for i := range node.friends {
 			node.friends[i] = make([]uint64, 0, h.config.M)
 		}
-		
+
 		// First node
 		if len(h.nodes) == 0 {
 			h.nodes[id] = node
@@ -759,22 +759,22 @@ func (h *HNSWIndex) Rebuild() error {
 			h.maxLevel = level
 			continue
 		}
-		
+
 		// Find entry point and search down
 		currID := h.entryID
-		
+
 		// Traverse from top level to node's level + 1
 		for l := h.maxLevel; l > level; l-- {
 			currID = h.searchLayerClosest(vector, currID, l)
 		}
-		
+
 		// Insert at each level from level to 0
 		for l := min(level, h.maxLevel); l >= 0; l-- {
 			neighbors := h.searchLayer(vector, currID, h.config.EfConstruction, l)
 			selectedNeighbors := h.selectNeighbors(vector, neighbors, h.config.M)
-			
+
 			node.friends[l] = selectedNeighbors
-			
+
 			for _, neighborID := range selectedNeighbors {
 				neighbor := h.nodes[neighborID]
 				if neighbor != nil && l < len(neighbor.friends) {
@@ -784,29 +784,29 @@ func (h *HNSWIndex) Rebuild() error {
 					}
 				}
 			}
-			
+
 			if len(selectedNeighbors) > 0 {
 				currID = selectedNeighbors[0]
 			}
 		}
-		
+
 		h.nodes[id] = node
-		
+
 		if level > h.maxLevel {
 			h.entryID = id
 			h.maxLevel = level
 		}
 	}
-	
+
 	// Validate the rebuilt index
-	if err := h.ValidateIntegrity(); err != nil {
+	if err := h.validateIntegrityLocked(); err != nil {
 		// Rollback on validation failure
 		h.nodes = backup.nodes
 		h.entryID = backup.entryID
 		h.maxLevel = backup.maxLevel
 		return fmt.Errorf("rebuild validation failed, rolled back: %w", err)
 	}
-	
+
 	return nil
 }
 
@@ -815,35 +815,40 @@ func (h *HNSWIndex) Rebuild() error {
 func (h *HNSWIndex) ValidateIntegrity() error {
 	h.mu.RLock()
 	defer h.mu.RUnlock()
-	
+
+	return h.validateIntegrityLocked()
+}
+
+// validateIntegrityLocked assumes the caller already holds a lock.
+func (h *HNSWIndex) validateIntegrityLocked() error {
 	if len(h.nodes) == 0 {
 		return nil
 	}
-	
+
 	// Check entry point exists
 	if _, exists := h.nodes[h.entryID]; !exists && len(h.nodes) > 0 {
 		return fmt.Errorf("entry point %d does not exist", h.entryID)
 	}
-	
+
 	// Check each node
 	orphanCount := 0
 	danglingRefCount := 0
-	
+
 	for id, node := range h.nodes {
 		// Check vector dimension
 		if len(node.vector) != h.dimension {
 			return fmt.Errorf("node %d has wrong dimension: expected %d, got %d", id, h.dimension, len(node.vector))
 		}
-		
+
 		// Check level consistency
 		if node.level < 0 || node.level > h.config.MaxLevel {
 			return fmt.Errorf("node %d has invalid level: %d", id, node.level)
 		}
-		
+
 		if len(node.friends) != node.level+1 {
 			return fmt.Errorf("node %d friends array length mismatch: expected %d, got %d", id, node.level+1, len(node.friends))
 		}
-		
+
 		// Check connections at each level
 		for level, friends := range node.friends {
 			for _, friendID := range friends {
@@ -851,25 +856,25 @@ func (h *HNSWIndex) ValidateIntegrity() error {
 					danglingRefCount++
 				}
 			}
-			
+
 			// Check for orphans at level 0 (no connections)
 			if level == 0 && len(friends) == 0 && len(h.nodes) > 1 {
 				orphanCount++
 			}
 		}
 	}
-	
+
 	// Report issues but allow small numbers (may be transient)
 	// Stricter threshold: 1% for production safety
 	if danglingRefCount > len(h.nodes)/100 {
 		return fmt.Errorf("high number of dangling references: %d (>1%% of nodes)", danglingRefCount)
 	}
-	
+
 	// 5% threshold for orphan nodes (more lenient as they're less critical)
 	if orphanCount > len(h.nodes)/20 {
 		return fmt.Errorf("high number of orphan nodes: %d (>5%% of nodes)", orphanCount)
 	}
-	
+
 	return nil
 }
 
@@ -878,7 +883,7 @@ func (h *HNSWIndex) TryLoadWithRebuild(r io.Reader) error {
 	if err := h.Load(r); err != nil {
 		return fmt.Errorf("load failed: %w", err)
 	}
-	
+
 	if err := h.ValidateIntegrity(); err != nil {
 		// Index is corrupted, rebuild
 		fmt.Printf("Index corruption detected (%v), rebuilding...\n", err)
@@ -887,7 +892,7 @@ func (h *HNSWIndex) TryLoadWithRebuild(r io.Reader) error {
 		}
 		fmt.Println("Index rebuilt successfully")
 	}
-	
+
 	return nil
 }
 
@@ -1140,7 +1145,7 @@ func (b *BruteForceIndex) Load(r io.Reader) error {
 func (b *BruteForceIndex) GetAllVectors() map[uint64][]float32 {
 	b.mu.RLock()
 	defer b.mu.RUnlock()
-	
+
 	result := make(map[uint64][]float32, len(b.vectors))
 	for id, vec := range b.vectors {
 		copied := make([]float32, len(vec))
@@ -1159,7 +1164,7 @@ func (b *BruteForceIndex) Rebuild() error {
 func (b *BruteForceIndex) ValidateIntegrity() error {
 	b.mu.RLock()
 	defer b.mu.RUnlock()
-	
+
 	for id, vec := range b.vectors {
 		if len(vec) != b.dimension {
 			return fmt.Errorf("vector %d has wrong dimension: expected %d, got %d", id, b.dimension, len(vec))

@@ -1202,6 +1202,30 @@ func (c *Client) MGetEntities(ids []uint64) ([]*types.Entity, error) {
 	return entities, nil
 }
 
+// ListEntities returns entities after the given cursor, up to limit, in ID order.
+func (c *Client) ListEntities(cursor uint64, limit int) ([]*types.Entity, uint64, error) {
+	req := &pb.ListEntitiesRequest{
+		Cursor: cursor,
+		Limit:  int32(limit),
+	}
+	resp, err := c.send(pb.CommandType_CMD_LIST_ENTITIES, req)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	var result pb.EntitiesResponse
+	if err := proto.Unmarshal(resp.Payload, &result); err != nil {
+		return nil, 0, err
+	}
+
+	var entities []*types.Entity
+	for _, e := range result.Entities {
+		entities = append(entities, codec.ProtoToEntity(e))
+	}
+
+	return entities, result.NextCursor, nil
+}
+
 func (c *Client) MSetDocuments(docs []types.BulkDocumentInput) ([]uint64, error) {
 	var pbDocs []*pb.AddDocumentRequest
 	for _, d := range docs {
@@ -1336,6 +1360,30 @@ func (c *Client) MGetRelationships(ids []uint64) ([]*types.Relationship, error) 
 	}
 
 	return rels, nil
+}
+
+// ListRelationships returns relationships after the given cursor, up to limit, in ID order.
+func (c *Client) ListRelationships(cursor uint64, limit int) ([]*types.Relationship, uint64, error) {
+	req := &pb.ListRelationshipsRequest{
+		Cursor: cursor,
+		Limit:  int32(limit),
+	}
+	resp, err := c.send(pb.CommandType_CMD_LIST_RELATIONSHIPS, req)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	var result pb.RelationshipsResponse
+	if err := proto.Unmarshal(resp.Payload, &result); err != nil {
+		return nil, 0, err
+	}
+
+	var rels []*types.Relationship
+	for _, r := range result.Relationships {
+		rels = append(rels, codec.ProtoToRelationship(r))
+	}
+
+	return rels, result.NextCursor, nil
 }
 
 // =============================================================================

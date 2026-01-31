@@ -216,6 +216,18 @@ class _Protocol:
         return req.SerializeToString()
 
     @staticmethod
+    def encode_list_entities(cursor: int, limit: int) -> bytes:
+        """Encode LIST_ENTITIES request."""
+        req = pb.ListEntitiesRequest(cursor=cursor, limit=limit)
+        return req.SerializeToString()
+
+    @staticmethod
+    def encode_list_relationships(cursor: int, limit: int) -> bytes:
+        """Encode LIST_RELATIONSHIPS request."""
+        req = pb.ListRelationshipsRequest(cursor=cursor, limit=limit)
+        return req.SerializeToString()
+
+    @staticmethod
     def decode_query_response(payload: bytes) -> Dict[str, Any]:
         """Decode QueryResponse."""
         resp = pb.QueryResponse()
@@ -270,6 +282,51 @@ class _Protocol:
             "communities": communities,
             "execution_time_ms": resp.stats.duration_micros / 1000.0 if resp.stats else 0.0,
         }
+
+    @staticmethod
+    def decode_entities_response(payload: bytes) -> Dict[str, Any]:
+        """Decode EntitiesResponse (used for LIST_ENTITIES)."""
+        resp = pb.EntitiesResponse()
+        resp.ParseFromString(payload)
+
+        entities = []
+        for ent in resp.entities:
+            entities.append(
+                {
+                    "id": ent.id,
+                    "external_id": ent.external_id,
+                    "title": ent.title,
+                    "type": ent.type,
+                    "description": ent.description,
+                    "textunit_ids": list(ent.textunit_ids),
+                    "created_at": ent.created_at,
+                }
+            )
+
+        return {"entities": entities, "next_cursor": resp.next_cursor}
+
+    @staticmethod
+    def decode_relationships_response(payload: bytes) -> Dict[str, Any]:
+        """Decode RelationshipsResponse (used for LIST_RELATIONSHIPS)."""
+        resp = pb.RelationshipsResponse()
+        resp.ParseFromString(payload)
+
+        relationships = []
+        for rel in resp.relationships:
+            relationships.append(
+                {
+                    "id": rel.id,
+                    "external_id": rel.external_id,
+                    "source_id": rel.source_id,
+                    "target_id": rel.target_id,
+                    "type": rel.type,
+                    "description": rel.description,
+                    "weight": rel.weight,
+                    "created_at": rel.created_at,
+                }
+            )
+
+        return {"relationships": relationships, "next_cursor": resp.next_cursor}
 
     @staticmethod
     def encode_compute_communities(resolution: float) -> bytes:

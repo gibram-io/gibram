@@ -225,6 +225,36 @@ class _Client:
         resp_payload = self._execute(pb.CommandType.CMD_QUERY, req_payload)
         return _Protocol.decode_query_response(resp_payload)
 
+    def list_entities(self, cursor: int = 0, limit: int = 1000) -> Dict[str, Any]:
+        """
+        List entities in ID order with pagination.
+
+        Args:
+            cursor: Last seen entity ID (0 = start)
+            limit: Max entities to return
+
+        Returns:
+            Dict with entities and next_cursor
+        """
+        req_payload = _Protocol.encode_list_entities(cursor, limit)
+        resp_payload = self._execute(pb.CommandType.CMD_LIST_ENTITIES, req_payload)
+        return _Protocol.decode_entities_response(resp_payload)
+
+    def list_relationships(self, cursor: int = 0, limit: int = 1000) -> Dict[str, Any]:
+        """
+        List relationships in ID order with pagination.
+
+        Args:
+            cursor: Last seen relationship ID (0 = start)
+            limit: Max relationships to return
+
+        Returns:
+            Dict with relationships and next_cursor
+        """
+        req_payload = _Protocol.encode_list_relationships(cursor, limit)
+        resp_payload = self._execute(pb.CommandType.CMD_LIST_RELATIONSHIPS, req_payload)
+        return _Protocol.decode_relationships_response(resp_payload)
+
     def compute_communities(self, resolution: float = 1.0) -> int:
         """
         Run community detection.

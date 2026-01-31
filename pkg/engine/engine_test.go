@@ -2,6 +2,7 @@
 package engine
 
 import (
+	"fmt"
 	"sync"
 	"testing"
 
@@ -919,6 +920,82 @@ func TestEngine_Query_AllSearchTypes(t *testing.T) {
 		if result.QueryID == 0 {
 			t.Errorf("Query with search type %s returned invalid QueryID", st)
 		}
+	}
+}
+
+func TestEngine_ListEntitiesPagination(t *testing.T) {
+	e := createTestEngine()
+
+	for i := 0; i < 5; i++ {
+		extID := fmt.Sprintf("ent-%d", i+1)
+		title := fmt.Sprintf("Entity %d", i+1)
+		if _, err := e.AddEntity(testSessionID, extID, title, "person", "desc", nil); err != nil {
+			t.Fatalf("AddEntity failed: %v", err)
+		}
+	}
+
+	entities, next := e.ListEntities(testSessionID, 0, 2)
+	if len(entities) != 2 {
+		t.Fatalf("Expected 2 entities, got %d", len(entities))
+	}
+	if next == 0 {
+		t.Fatalf("Expected non-zero next cursor")
+	}
+	if entities[0].ID >= entities[1].ID {
+		t.Errorf("Expected ascending IDs, got %d then %d", entities[0].ID, entities[1].ID)
+	}
+
+	entities2, next2 := e.ListEntities(testSessionID, next, 2)
+	if len(entities2) != 2 {
+		t.Fatalf("Expected 2 entities, got %d", len(entities2))
+	}
+	if next2 == 0 {
+		t.Fatalf("Expected non-zero next cursor for page 2")
+	}
+
+	entities3, next3 := e.ListEntities(testSessionID, next2, 2)
+	if len(entities3) != 1 {
+		t.Fatalf("Expected 1 entity, got %d", len(entities3))
+	}
+	if next3 != 0 {
+		t.Fatalf("Expected next cursor 0 at end, got %d", next3)
+	}
+}
+
+func TestEngine_ListRelationshipsPagination(t *testing.T) {
+	e := createTestEngine()
+
+	e1, _ := e.AddEntity(testSessionID, "ent-001", "Entity 1", "person", "desc", nil)
+	e2, _ := e.AddEntity(testSessionID, "ent-002", "Entity 2", "person", "desc", nil)
+	e3, _ := e.AddEntity(testSessionID, "ent-003", "Entity 3", "person", "desc", nil)
+
+	if _, err := e.AddRelationship(testSessionID, "rel-001", e1.ID, e2.ID, "KNOWS", "desc", 1.0); err != nil {
+		t.Fatalf("AddRelationship failed: %v", err)
+	}
+	if _, err := e.AddRelationship(testSessionID, "rel-002", e2.ID, e3.ID, "KNOWS", "desc", 1.0); err != nil {
+		t.Fatalf("AddRelationship failed: %v", err)
+	}
+	if _, err := e.AddRelationship(testSessionID, "rel-003", e3.ID, e1.ID, "KNOWS", "desc", 1.0); err != nil {
+		t.Fatalf("AddRelationship failed: %v", err)
+	}
+
+	rels, next := e.ListRelationships(testSessionID, 0, 2)
+	if len(rels) != 2 {
+		t.Fatalf("Expected 2 relationships, got %d", len(rels))
+	}
+	if next == 0 {
+		t.Fatalf("Expected non-zero next cursor")
+	}
+	if rels[0].ID >= rels[1].ID {
+		t.Errorf("Expected ascending IDs, got %d then %d", rels[0].ID, rels[1].ID)
+	}
+
+	rels2, next2 := e.ListRelationships(testSessionID, next, 2)
+	if len(rels2) != 1 {
+		t.Fatalf("Expected 1 relationship, got %d", len(rels2))
+	}
+	if next2 != 0 {
+		t.Fatalf("Expected next cursor 0 at end, got %d", next2)
 	}
 }
 

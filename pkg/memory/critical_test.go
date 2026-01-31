@@ -125,7 +125,7 @@ func TestMemoryLeaks(t *testing.T) {
 	runtime.ReadMemStats(&m2)
 	
 	// Memory should not grow excessively (allow 10MB growth)
-	growth := m2.Alloc - m1.Alloc
+	growth := int64(m2.Alloc) - int64(m1.Alloc)
 	if growth > 10*1024*1024 {
 		t.Errorf("Possible memory leak: grew %d bytes", growth)
 	}

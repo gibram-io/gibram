@@ -14,6 +14,7 @@ import (
 
 	"github.com/gibram-io/gibram/pkg/client"
 	"github.com/gibram-io/gibram/pkg/types"
+	"github.com/gibram-io/gibram/pkg/version"
 )
 
 func main() {
@@ -24,7 +25,7 @@ func main() {
 	flag.Parse()
 
 	fmt.Println("╔═══════════════════════════════════════╗")
-	fmt.Println("║         GibRAM CLI v0.1.0             ║")
+	fmt.Printf("║         GibRAM CLI v%-7s        ║\n", version.Version)
 	fmt.Println("║     Type 'help' for commands          ║")
 	fmt.Println("╚═══════════════════════════════════════╝")
 	fmt.Println()
@@ -34,7 +35,7 @@ func main() {
 	config.TLSEnabled = *useTLS
 	config.TLSSkipVerify = *skipVerify
 	config.APIKey = *apiKey
-	
+
 	c, err := client.NewClientWithConfig(*host, "cli-session", config)
 	if err != nil {
 		fmt.Printf("Error: %v\n", err)
@@ -117,10 +118,10 @@ func main() {
 			}
 			docID, _ := strconv.ParseUint(args[1], 10, 64)
 			content := strings.Join(args[2:], " ")
-			
+
 			// Generate random embedding for testing
 			embedding := randomEmbedding(1536)
-			
+
 			id, err := c.AddTextUnit(args[0], docID, content, embedding, len(content)/4)
 			if err != nil {
 				fmt.Printf("Error: %v\n", err)
@@ -135,10 +136,10 @@ func main() {
 				continue
 			}
 			description := strings.Join(args[3:], " ")
-			
+
 			// Generate random embedding for testing
 			embedding := randomEmbedding(1536)
-			
+
 			id, err := c.AddEntity(args[0], args[1], args[2], description, embedding)
 			if err != nil {
 				fmt.Printf("Error: %v\n", err)
@@ -189,7 +190,7 @@ func main() {
 			if len(args) > 3 {
 				description = strings.Join(args[3:], " ")
 			}
-			
+
 			id, err := c.AddRelationship("", sourceID, targetID, relType, description, 1.0)
 			if err != nil {
 				fmt.Printf("Error: %v\n", err)
@@ -345,41 +346,41 @@ func main() {
 
 		// DEPRECATED: TTL commands removed - session-level management only
 		/*
-		case "SETTTL":
-			// SETTTL <type> <id> <ttl_seconds>
-			if len(args) < 3 {
-				fmt.Println("Usage: SETTTL <document|textunit|entity|community> <id> <ttl_seconds>")
-				continue
-			}
-			itemType := types.ItemType(strings.ToLower(args[0]))
-			id, _ := strconv.ParseUint(args[1], 10, 64)
-			ttl, _ := strconv.ParseInt(args[2], 10, 64)
-			if err := c.SetTTL(itemType, id, ttl); err != nil {
-				fmt.Printf("Error: %v\n", err)
-			} else {
-				fmt.Println("OK")
-			}
-
-		case "TTL":
-			// TTL <type> <id>
-			if len(args) < 2 {
-				fmt.Println("Usage: TTL <document|textunit|entity|community> <id>")
-				continue
-			}
-			itemType := types.ItemType(strings.ToLower(args[0]))
-			id, _ := strconv.ParseUint(args[1], 10, 64)
-			ttl, err := c.GetTTL(itemType, id)
-			if err != nil {
-				fmt.Printf("Error: %v\n", err)
-			} else {
-				if ttl == -2 {
-					fmt.Println("(not found)")
-				} else if ttl == -1 {
-					fmt.Println("(no expiry)")
-				} else {
-					fmt.Printf("%d seconds\n", ttl)
+			case "SETTTL":
+				// SETTTL <type> <id> <ttl_seconds>
+				if len(args) < 3 {
+					fmt.Println("Usage: SETTTL <document|textunit|entity|community> <id> <ttl_seconds>")
+					continue
 				}
-			}
+				itemType := types.ItemType(strings.ToLower(args[0]))
+				id, _ := strconv.ParseUint(args[1], 10, 64)
+				ttl, _ := strconv.ParseInt(args[2], 10, 64)
+				if err := c.SetTTL(itemType, id, ttl); err != nil {
+					fmt.Printf("Error: %v\n", err)
+				} else {
+					fmt.Println("OK")
+				}
+
+			case "TTL":
+				// TTL <type> <id>
+				if len(args) < 2 {
+					fmt.Println("Usage: TTL <document|textunit|entity|community> <id>")
+					continue
+				}
+				itemType := types.ItemType(strings.ToLower(args[0]))
+				id, _ := strconv.ParseUint(args[1], 10, 64)
+				ttl, err := c.GetTTL(itemType, id)
+				if err != nil {
+					fmt.Printf("Error: %v\n", err)
+				} else {
+					if ttl == -2 {
+						fmt.Println("(not found)")
+					} else if ttl == -1 {
+						fmt.Println("(no expiry)")
+					} else {
+						fmt.Printf("%d seconds\n", ttl)
+					}
+				}
 		*/
 
 		case "SNAPSHOT", "SAVE":

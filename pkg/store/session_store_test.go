@@ -2,6 +2,7 @@
 package store
 
 import (
+	"fmt"
 	"testing"
 	"time"
 )
@@ -450,6 +451,48 @@ func TestDeleteEntity(t *testing.T) {
 	}
 }
 
+func TestListEntitiesPagination(t *testing.T) {
+	store := NewSessionStore("test-session", testVectorDim)
+
+	for i := 0; i < 5; i++ {
+		extID := fmt.Sprintf("ent-%d", i+1)
+		title := fmt.Sprintf("Entity %d", i+1)
+		if _, err := store.AddEntity(extID, title, "person", "desc", nil); err != nil {
+			t.Fatalf("AddEntity failed: %v", err)
+		}
+	}
+
+	entities, next := store.ListEntities(0, 2)
+	if len(entities) != 2 {
+		t.Fatalf("Expected 2 entities, got %d", len(entities))
+	}
+	if next == 0 {
+		t.Fatalf("Expected non-zero next cursor")
+	}
+	if entities[0].ID >= entities[1].ID {
+		t.Errorf("Expected ascending IDs, got %d then %d", entities[0].ID, entities[1].ID)
+	}
+	if next != entities[len(entities)-1].ID {
+		t.Errorf("Expected next cursor %d, got %d", entities[len(entities)-1].ID, next)
+	}
+
+	entities2, next2 := store.ListEntities(next, 2)
+	if len(entities2) != 2 {
+		t.Fatalf("Expected 2 entities, got %d", len(entities2))
+	}
+	if next2 == 0 {
+		t.Fatalf("Expected non-zero next cursor for page 2")
+	}
+
+	entities3, next3 := store.ListEntities(next2, 2)
+	if len(entities3) != 1 {
+		t.Fatalf("Expected 1 entity, got %d", len(entities3))
+	}
+	if next3 != 0 {
+		t.Fatalf("Expected next cursor 0 at end, got %d", next3)
+	}
+}
+
 // =============================================================================
 // Relationship Operations Tests
 // =============================================================================
@@ -549,6 +592,47 @@ func TestDeleteRelationship(t *testing.T) {
 	ok = store.DeleteRelationship(99999)
 	if ok {
 		t.Error("DeleteRelationship should return false for non-existent ID")
+	}
+}
+
+func TestListRelationshipsPagination(t *testing.T) {
+	store := NewSessionStore("test-session", testVectorDim)
+
+	embedding := make([]float32, testVectorDim)
+	e1, _ := store.AddEntity("ent-001", "Entity 1", "person", "Desc", embedding)
+	e2, _ := store.AddEntity("ent-002", "Entity 2", "person", "Desc", embedding)
+	e3, _ := store.AddEntity("ent-003", "Entity 3", "person", "Desc", embedding)
+
+	if _, err := store.AddRelationship("rel-001", e1.ID, e2.ID, "KNOWS", "Desc", 1.0); err != nil {
+		t.Fatalf("AddRelationship failed: %v", err)
+	}
+	if _, err := store.AddRelationship("rel-002", e2.ID, e3.ID, "KNOWS", "Desc", 1.0); err != nil {
+		t.Fatalf("AddRelationship failed: %v", err)
+	}
+	if _, err := store.AddRelationship("rel-003", e3.ID, e1.ID, "KNOWS", "Desc", 1.0); err != nil {
+		t.Fatalf("AddRelationship failed: %v", err)
+	}
+
+	rels, next := store.ListRelationships(0, 2)
+	if len(rels) != 2 {
+		t.Fatalf("Expected 2 relationships, got %d", len(rels))
+	}
+	if next == 0 {
+		t.Fatalf("Expected non-zero next cursor")
+	}
+	if rels[0].ID >= rels[1].ID {
+		t.Errorf("Expected ascending IDs, got %d then %d", rels[0].ID, rels[1].ID)
+	}
+	if next != rels[len(rels)-1].ID {
+		t.Errorf("Expected next cursor %d, got %d", rels[len(rels)-1].ID, next)
+	}
+
+	rels2, next2 := store.ListRelationships(next, 2)
+	if len(rels2) != 1 {
+		t.Fatalf("Expected 1 relationship, got %d", len(rels2))
+	}
+	if next2 != 0 {
+		t.Fatalf("Expected next cursor 0 at end, got %d", next2)
 	}
 }
 
@@ -750,7 +834,7 @@ func TestConcurrentDocumentOperations(t *testing.T) {
 	// Concurrent adds
 	for i := 0; i < numOps; i++ {
 		go func(id int) {
-			extID := string(rune('A' + (id % 26))) + string(rune('0' + (id / 26)))
+			extID := string(rune('A'+(id%26))) + string(rune('0'+(id/26)))
 			_, err := store.AddDocument(extID, "test.pdf")
 			if err != nil {
 				// Duplicates are expected with random IDs
@@ -779,7 +863,7 @@ func TestConcurrentEntityOperations(t *testing.T) {
 	// Concurrent adds
 	for i := 0; i < numOps; i++ {
 		go func(id int) {
-			extID := string(rune('A' + (id % 26))) + string(rune('0' + (id / 26)))
+			extID := string(rune('A'+(id%26))) + string(rune('0'+(id/26)))
 			embedding := make([]float32, testVectorDim)
 			_, err := store.AddEntity(extID, "Entity "+extID, "person", "Desc", embedding)
 			if err != nil {

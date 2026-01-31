@@ -15,6 +15,7 @@ import (
 	"github.com/gibram-io/gibram/pkg/graph"
 	"github.com/gibram-io/gibram/pkg/store"
 	"github.com/gibram-io/gibram/pkg/types"
+	"github.com/gibram-io/gibram/pkg/version"
 )
 
 // =============================================================================
@@ -925,7 +926,7 @@ func (e *Engine) Info() types.ServerInfo {
 	}
 
 	return types.ServerInfo{
-		Version:           "0.1.0",
+		Version:           version.Version,
 		DocumentCount:     docCount,
 		TextUnitCount:     tuCount,
 		EntityCount:       entCount,
@@ -944,7 +945,7 @@ func (e *Engine) InfoForSession(sessionID string) (types.ServerInfo, error) {
 	}
 
 	return types.ServerInfo{
-		Version:           "0.1.0",
+		Version:           version.Version,
 		DocumentCount:     sess.DocumentCount(),
 		TextUnitCount:     sess.TextUnitCount(),
 		EntityCount:       sess.EntityCount(),
@@ -1102,6 +1103,15 @@ func (e *Engine) MGetEntities(sessionID string, ids []uint64) []*types.Entity {
 	return result
 }
 
+// ListEntities returns entities after the given cursor, up to limit, in ID order.
+func (e *Engine) ListEntities(sessionID string, cursor uint64, limit int) ([]*types.Entity, uint64) {
+	sess, err := e.getSession(sessionID)
+	if err != nil {
+		return nil, 0
+	}
+	return sess.ListEntities(cursor, limit)
+}
+
 // MSetRelationships adds multiple relationships
 func (e *Engine) MSetRelationships(sessionID string, inputs []types.BulkRelationshipInput) ([]uint64, error) {
 	sess, err := e.getOrCreateSession(sessionID)
@@ -1136,14 +1146,23 @@ func (e *Engine) MGetRelationships(sessionID string, ids []uint64) []*types.Rela
 	return result
 }
 
+// ListRelationships returns relationships after the given cursor, up to limit, in ID order.
+func (e *Engine) ListRelationships(sessionID string, cursor uint64, limit int) ([]*types.Relationship, uint64) {
+	sess, err := e.getSession(sessionID)
+	if err != nil {
+		return nil, 0
+	}
+	return sess.ListRelationships(cursor, limit)
+}
+
 // =============================================================================
 // Snapshot/Restore
 // =============================================================================
 
 // EngineSnapshot contains all engine state for serialization
 type EngineSnapshot struct {
-	Version   string                           `json:"version"`
-	VectorDim int                              `json:"vector_dim"`
+	Version   string                            `json:"version"`
+	VectorDim int                               `json:"vector_dim"`
 	Sessions  map[string]*store.SessionSnapshot `json:"sessions"`
 }
 
@@ -1153,7 +1172,7 @@ func (e *Engine) Snapshot(w io.Writer) error {
 	defer e.mu.RUnlock()
 
 	snapshot := EngineSnapshot{
-		Version:   "0.1.0",
+		Version:   version.Version,
 		VectorDim: e.vectorDim,
 		Sessions:  make(map[string]*store.SessionSnapshot),
 	}

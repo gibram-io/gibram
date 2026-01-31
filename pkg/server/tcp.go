@@ -662,6 +662,12 @@ func (s *Server) processEnvelope(env *pb.Envelope, state *connState) *pb.Envelop
 	case pb.CommandType_CMD_MGET_RELATIONSHIPS:
 		response.CmdType, response.Payload = s.handleMGetRelationships(env)
 
+	case pb.CommandType_CMD_LIST_ENTITIES:
+		response.CmdType, response.Payload = s.handleListEntities(env)
+
+	case pb.CommandType_CMD_LIST_RELATIONSHIPS:
+		response.CmdType, response.Payload = s.handleListRelationships(env)
+
 	// Pipeline (require session)
 	case pb.CommandType_CMD_PIPELINE:
 		response.CmdType, response.Payload = s.handlePipeline(env, state)
@@ -716,7 +722,12 @@ func (s *Server) handleInfo(env *pb.Envelope) []byte {
 	if env.SessionId != "" {
 		info, err := s.engine.InfoForSession(env.SessionId)
 		if err != nil {
-			return s.errorPayload(err.Error())
+			// Fallback to global info for missing/expired sessions to avoid error payloads
+			if err == engine.ErrSessionNotFound || err == engine.ErrSessionExpired {
+				info = s.engine.Info()
+			} else {
+				return s.errorPayload(err.Error())
+			}
 		}
 		resp := &pb.InfoResponse{
 			Version:           info.Version,
@@ -782,16 +793,16 @@ func (s *Server) handleListSessions() (pb.CommandType, []byte) {
 
 	for i, sess := range sessions {
 		resp.Sessions[i] = &pb.SessionInfo{
-			SessionId:        sess.ID,
-			CreatedAt:        sess.CreatedAt,
-			LastAccess:       sess.LastAccess,
-			Ttl:              sess.TTL,
-			IdleTtl:          sess.IdleTTL,
-			DocumentCount:    uint64(sess.DocumentCount),
-			TextunitCount:    uint64(sess.TextUnitCount),
-			EntityCount:      uint64(sess.EntityCount),
+			SessionId:         sess.ID,
+			CreatedAt:         sess.CreatedAt,
+			LastAccess:        sess.LastAccess,
+			Ttl:               sess.TTL,
+			IdleTtl:           sess.IdleTTL,
+			DocumentCount:     uint64(sess.DocumentCount),
+			TextunitCount:     uint64(sess.TextUnitCount),
+			EntityCount:       uint64(sess.EntityCount),
 			RelationshipCount: uint64(sess.RelationshipCount),
-			CommunityCount:   uint64(sess.CommunityCount),
+			CommunityCount:    uint64(sess.CommunityCount),
 		}
 	}
 
@@ -1533,6 +1544,38 @@ func (s *Server) handleMGetEntities(env *pb.Envelope) (pb.CommandType, []byte) {
 	return pb.CommandType_CMD_ENTITIES_RESPONSE, data
 }
 
+func (s *Server) handleListEntities(env *pb.Envelope) (pb.CommandType, []byte) {
+	sessionID, err := s.getSessionID(env)
+	if err != nil {
+		return pb.CommandType_CMD_ERROR, s.errorPayload(err.Error())
+	}
+
+	var req pb.ListEntitiesRequest
+	if err := proto.Unmarshal(env.Payload, &req); err != nil {
+		return pb.CommandType_CMD_ERROR, s.errorPayload(err.Error())
+	}
+
+	limit := int(req.Limit)
+	if limit <= 0 {
+		limit = 1000
+	}
+	if limit > 10000 {
+		limit = 10000
+	}
+
+	entities, nextCursor := s.engine.ListEntities(sessionID, req.Cursor, limit)
+	resp := &pb.EntitiesResponse{
+		Entities:   make([]*pb.Entity, len(entities)),
+		NextCursor: nextCursor,
+	}
+	for i, ent := range entities {
+		resp.Entities[i] = codec.EntityToProto(ent)
+	}
+
+	data, _ := proto.Marshal(resp)
+	return pb.CommandType_CMD_ENTITIES_RESPONSE, data
+}
+
 func (s *Server) handleMSetDocuments(env *pb.Envelope) (pb.CommandType, []byte) {
 	sessionID, err := s.getSessionID(env)
 	if err != nil {
@@ -1687,6 +1730,38 @@ func (s *Server) handleMGetRelationships(env *pb.Envelope) (pb.CommandType, []by
 	rels := s.engine.MGetRelationships(sessionID, req.Ids)
 	resp := &pb.RelationshipsResponse{
 		Relationships: make([]*pb.Relationship, len(rels)),
+	}
+	for i, rel := range rels {
+		resp.Relationships[i] = codec.RelationshipToProto(rel)
+	}
+
+	data, _ := proto.Marshal(resp)
+	return pb.CommandType_CMD_RELATIONSHIPS_RESPONSE, data
+}
+
+func (s *Server) handleListRelationships(env *pb.Envelope) (pb.CommandType, []byte) {
+	sessionID, err := s.getSessionID(env)
+	if err != nil {
+		return pb.CommandType_CMD_ERROR, s.errorPayload(err.Error())
+	}
+
+	var req pb.ListRelationshipsRequest
+	if err := proto.Unmarshal(env.Payload, &req); err != nil {
+		return pb.CommandType_CMD_ERROR, s.errorPayload(err.Error())
+	}
+
+	limit := int(req.Limit)
+	if limit <= 0 {
+		limit = 1000
+	}
+	if limit > 10000 {
+		limit = 10000
+	}
+
+	rels, nextCursor := s.engine.ListRelationships(sessionID, req.Cursor, limit)
+	resp := &pb.RelationshipsResponse{
+		Relationships: make([]*pb.Relationship, len(rels)),
+		NextCursor:    nextCursor,
 	}
 	for i, rel := range rels {
 		resp.Relationships[i] = codec.RelationshipToProto(rel)

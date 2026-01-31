@@ -19,7 +19,11 @@ import (
 	"github.com/gibram-io/gibram/pkg/metrics"
 	"github.com/gibram-io/gibram/pkg/server"
 	"github.com/gibram-io/gibram/pkg/shutdown"
+	"github.com/gibram-io/gibram/pkg/version"
 )
+
+// Version can be overridden at build time via -ldflags "-X main.Version=...".
+var Version = "dev"
 
 func main() {
 	// Command line flags
@@ -70,7 +74,11 @@ func main() {
 	log := logging.WithPrefix("main")
 
 	// Print startup info
-	log.Info("GibRAM v0.1.0 starting...")
+	startVersion := Version
+	if startVersion == "" || startVersion == "dev" {
+		startVersion = version.Version
+	}
+	log.Info("GibRAM v%s starting...", startVersion)
 	log.Info("  Address:    %s", cfg.Server.Addr)
 	log.Info("  Data dir:   %s", cfg.Server.DataDir)
 	log.Info("  Vector dim: %d", cfg.Server.VectorDim)
@@ -244,7 +252,7 @@ func main() {
 
 		return nil
 	})
-	
+
 	if err := srv.Start(cfg.Server.Addr); err != nil {
 		log.Error("Failed to start server: %v", err)
 		os.Exit(1)

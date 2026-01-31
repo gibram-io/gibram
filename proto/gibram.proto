@@ -93,6 +93,8 @@ enum CommandType {
   CMD_DOCUMENTS_RESPONSE = 89;
   CMD_TEXTUNITS_RESPONSE = 90;
   CMD_RELATIONSHIPS_RESPONSE = 91;
+  CMD_LIST_ENTITIES = 92;
+  CMD_LIST_RELATIONSHIPS = 93;
   
   // Pipeline (100-109)
   CMD_PIPELINE = 100;
@@ -436,6 +438,11 @@ message HealthResponse {
 // BULK OPERATIONS - TTL removed from requests
 // =============================================================================
 
+message ListEntitiesRequest {
+  uint64 cursor = 1;  // last seen entity ID (0 = start)
+  int32 limit = 2;    // max entities to return (0 = server default)
+}
+
 message MSetEntitiesRequest {
   repeated AddEntityRequest entities = 1;
 }
@@ -447,6 +454,7 @@ message MGetEntitiesRequest {
 message EntitiesResponse {
   repeated Entity entities = 1;
   repeated uint64 created_ids = 2;  // for MSET responses
+  uint64 next_cursor = 3;           // for LIST responses (0 = no more)
 }
 
 message MSetDocumentsRequest {
@@ -486,6 +494,12 @@ message MGetRelationshipsRequest {
 message RelationshipsResponse {
   repeated Relationship relationships = 1;
   repeated uint64 created_ids = 2;
+  uint64 next_cursor = 3;  // for LIST responses (0 = no more)
+}
+
+message ListRelationshipsRequest {
+  uint64 cursor = 1;  // last seen relationship ID (0 = start)
+  int32 limit = 2;    // max relationships to return (0 = server default)
 }
 
 // =============================================================================

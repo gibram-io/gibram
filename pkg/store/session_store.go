@@ -3,6 +3,7 @@ package store
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 	"sync"
 
@@ -29,23 +30,23 @@ type SessionStore struct {
 	docByExtID    map[string]uint64
 	docByFilename map[string]uint64
 
-	textUnits   map[uint64]*types.TextUnit
-	tuByExtID   map[string]uint64
-	tuByDocID   map[uint64][]uint64
+	textUnits map[uint64]*types.TextUnit
+	tuByExtID map[string]uint64
+	tuByDocID map[uint64][]uint64
 
-	entities    map[uint64]*types.Entity
-	entByExtID  map[string]uint64
-	entByTitle  map[string]uint64
+	entities   map[uint64]*types.Entity
+	entByExtID map[string]uint64
+	entByTitle map[string]uint64
 
-	relationships  map[uint64]*types.Relationship
-	relByExtID     map[string]uint64
+	relationships     map[uint64]*types.Relationship
+	relByExtID        map[string]uint64
 	relBySourceTarget map[string]uint64
-	outEdges       map[uint64][]uint64
-	inEdges        map[uint64][]uint64
+	outEdges          map[uint64][]uint64
+	inEdges           map[uint64][]uint64
 
-	communities   map[uint64]*types.Community
-	commByExtID   map[string]uint64
-	commByLevel   map[int][]uint64
+	communities map[uint64]*types.Community
+	commByExtID map[string]uint64
+	commByLevel map[int][]uint64
 
 	// Vector indices (per-session, lazy initialized)
 	textUnitIndex  vector.Index
@@ -208,7 +209,7 @@ func (s *SessionStore) AddDocument(extID, filename string) (*types.Document, err
 	if filename != "" {
 		s.docByFilename[filename] = doc.ID
 	}
-	
+
 	s.session.Touch()
 	return doc, nil
 }
@@ -250,7 +251,7 @@ func (s *SessionStore) DeleteDocument(id uint64) bool {
 	delete(s.docByExtID, doc.ExternalID)
 	delete(s.docByFilename, doc.Filename)
 	delete(s.documents, id)
-	
+
 	s.session.Touch()
 	return true
 }
@@ -343,7 +344,7 @@ func (s *SessionStore) DeleteTextUnit(id uint64) bool {
 	}
 
 	delete(s.tuByExtID, tu.ExternalID)
-	
+
 	// Remove from byDocID
 	docIDs := s.tuByDocID[tu.DocumentID]
 	for i, tid := range docIDs {
@@ -354,7 +355,7 @@ func (s *SessionStore) DeleteTextUnit(id uint64) bool {
 	}
 
 	delete(s.textUnits, id)
-	
+
 	if s.textUnitIndex != nil {
 		s.textUnitIndex.Remove(id)
 	}
@@ -372,7 +373,7 @@ func (s *SessionStore) LinkTextUnitToEntity(tuID, entityID uint64) bool {
 	if !ok {
 		return false
 	}
-	
+
 	ent, ok := s.entities[entityID]
 	if !ok {
 		return false
@@ -380,7 +381,7 @@ func (s *SessionStore) LinkTextUnitToEntity(tuID, entityID uint64) bool {
 
 	tu.AddEntityID(entityID)
 	ent.AddTextUnitID(tuID)
-	
+
 	s.session.Touch()
 	return true
 }
@@ -524,6 +525,43 @@ func (s *SessionStore) GetAllEntities() []*types.Entity {
 		result = append(result, ent)
 	}
 	return result
+}
+
+// ListEntities returns entities after the given cursor, up to limit, in ID order.
+func (s *SessionStore) ListEntities(afterID uint64, limit int) ([]*types.Entity, uint64) {
+	if limit <= 0 {
+		limit = 1000
+	}
+
+	s.mu.RLock()
+	ids := make([]uint64, 0, len(s.entities))
+	for id := range s.entities {
+		ids = append(ids, id)
+	}
+	s.mu.RUnlock()
+
+	sort.Slice(ids, func(i, j int) bool { return ids[i] < ids[j] })
+	start := sort.Search(len(ids), func(i int) bool { return ids[i] > afterID })
+
+	results := make([]*types.Entity, 0, limit)
+	i := start
+	var lastID uint64
+
+	s.mu.RLock()
+	for ; i < len(ids) && len(results) < limit; i++ {
+		lastID = ids[i]
+		if ent, ok := s.entities[lastID]; ok {
+			results = append(results, ent)
+		}
+	}
+	s.mu.RUnlock()
+
+	s.session.Touch()
+
+	if i < len(ids) {
+		return results, lastID
+	}
+	return results, 0
 }
 
 // EntityCount returns the number of entities
@@ -686,7 +724,7 @@ func (s *SessionStore) DeleteRelationship(id uint64) bool {
 	}
 
 	delete(s.relationships, id)
-	
+
 	s.session.Touch()
 	return true
 }
@@ -701,6 +739,43 @@ func (s *SessionStore) GetAllRelationships() []*types.Relationship {
 		result = append(result, rel)
 	}
 	return result
+}
+
+// ListRelationships returns relationships after the given cursor, up to limit, in ID order.
+func (s *SessionStore) ListRelationships(afterID uint64, limit int) ([]*types.Relationship, uint64) {
+	if limit <= 0 {
+		limit = 1000
+	}
+
+	s.mu.RLock()
+	ids := make([]uint64, 0, len(s.relationships))
+	for id := range s.relationships {
+		ids = append(ids, id)
+	}
+	s.mu.RUnlock()
+
+	sort.Slice(ids, func(i, j int) bool { return ids[i] < ids[j] })
+	start := sort.Search(len(ids), func(i int) bool { return ids[i] > afterID })
+
+	results := make([]*types.Relationship, 0, limit)
+	i := start
+	var lastID uint64
+
+	s.mu.RLock()
+	for ; i < len(ids) && len(results) < limit; i++ {
+		lastID = ids[i]
+		if rel, ok := s.relationships[lastID]; ok {
+			results = append(results, rel)
+		}
+	}
+	s.mu.RUnlock()
+
+	s.session.Touch()
+
+	if i < len(ids) {
+		return results, lastID
+	}
+	return results, 0
 }
 
 // RelationshipCount returns the number of relationships
@@ -882,17 +957,17 @@ func (s *SessionStore) Clear() {
 
 // SessionSnapshot contains all session state for serialization
 type SessionSnapshot struct {
-	SessionID         string                   `json:"session_id"`
-	Session           *types.Session           `json:"session"`
-	Documents         []*types.Document        `json:"documents"`
-	TextUnits         []*types.TextUnit        `json:"text_units"`
-	Entities          []*types.Entity          `json:"entities"`
-	Relationships     []*types.Relationship    `json:"relationships"`
-	Communities       []*types.Community       `json:"communities"`
-	IDGeneratorState  map[string]uint64        `json:"id_generator_state"`
-	TextUnitVectors   map[uint64][]float32     `json:"text_unit_vectors"`
-	EntityVectors     map[uint64][]float32     `json:"entity_vectors"`
-	CommunityVectors  map[uint64][]float32     `json:"community_vectors"`
+	SessionID        string                `json:"session_id"`
+	Session          *types.Session        `json:"session"`
+	Documents        []*types.Document     `json:"documents"`
+	TextUnits        []*types.TextUnit     `json:"text_units"`
+	Entities         []*types.Entity       `json:"entities"`
+	Relationships    []*types.Relationship `json:"relationships"`
+	Communities      []*types.Community    `json:"communities"`
+	IDGeneratorState map[string]uint64     `json:"id_generator_state"`
+	TextUnitVectors  map[uint64][]float32  `json:"text_unit_vectors"`
+	EntityVectors    map[uint64][]float32  `json:"entity_vectors"`
+	CommunityVectors map[uint64][]float32  `json:"community_vectors"`
 }
 
 // Snapshot creates a snapshot of the session

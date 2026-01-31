@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "gibram"
-version = "0.1.0"
+dynamic = ["version"]
 description = "GraphRAG-style Python SDK for GibRAM - Graph in-Buffer Retrieval & Associative Memory"
 readme = "README.md"
 license = {text = "MIT"}
@@ -63,6 +63,9 @@ Homepage = "https://github.com/gibram-io/gibram"
 Documentation = "https://gibram.io/docs/python-sdk"
 Repository = "https://github.com/gibram-io/gibram"
 Issues = "https://github.com/gibram-io/gibram/issues"
+
+[tool.setuptools.dynamic]
+version = {file = ["../../pkg/version/version.txt"]}
 
 [tool.setuptools.packages.find]
 where = ["."]

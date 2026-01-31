@@ -3,7 +3,7 @@ name: Release
 on:
   push:
     tags:
-      - 'v*'
+      - 'server/v*'
 
 permissions:
   contents: write
@@ -36,10 +36,26 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       
+      - name: Extract server version
+        id: version
+        run: |
+          tag="${GITHUB_REF_NAME}"
+          version="${tag#server/}"
+          version="${version#v}"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+      
+      - name: Verify server version matches tag
+        run: |
+          code_version=$(cat pkg/version/version.txt | tr -d '\n')
+          if [ "$code_version" != "${{ steps.version.outputs.version }}" ]; then
+            echo "Tag version does not match version file: tag=${{ steps.version.outputs.version }} file=$code_version"
+            exit 1
+          fi
+      
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.23'
+          go-version-file: go.mod
       
       - name: Build binary
         env:
@@ -47,7 +63,7 @@ jobs:
           GOARCH: ${{ matrix.goarch }}
           CGO_ENABLED: 0
         run: |
-          go build -ldflags="-s -w -X main.Version=${{ github.ref_name }}" \
+          go build -ldflags="-s -w -X main.Version=${{ steps.version.outputs.version }}" \
             -o gibram-server ./cmd/server
       
       - name: Create archive
@@ -87,15 +103,15 @@ jobs:
       - name: Generate release notes
         id: release_notes
         run: |
-          cat > release_notes.md << 'EOF'
-          ## GibRAM ${{ github.ref_name }}
+          cat > release_notes.md << EOF
+          ## GibRAM v${{ steps.version.outputs.version }}
           
           ### Installation
           
           **Quick install (Linux/macOS):**
-          ```bash
+          \`\`\`bash
           curl -fsSL https://gibram.io/install.sh | sh
-          ```
+          \`\`\`
           
           **Manual download:**
           Download the binary for your platform below, extract and run.
@@ -108,9 +124,9 @@ jobs:
           SHA256 checksums are provided for verification.
           
           ### Python SDK
-          ```bash
+          \`\`\`bash
           pip install gibram
-          ```
+          \`\`\`
           
           ### Documentation
           - [GitHub Repository](https://github.com/gibram-io/gibram)
