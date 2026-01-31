@@ -89,7 +89,9 @@ jobs:
         go test -v -race -timeout=10m ./pkg/resilience/...
 
     - name: Run integration tests with race detector
-      run: go test -v -race -timeout=15m ./test/...
+      run: |
+        go test -v -race -timeout=15m ./pkg/server -run TestServerIntegration
+        go test -v -race -timeout=15m ./pkg/client -run TestClient_
 
   benchmark:
     name: Benchmark
@@ -137,6 +139,9 @@ jobs:
       run: go build -v ./...
 
     - name: Verify no uncommitted files
+      shell: bash
       run: |
         git diff --exit-code
-        git status --porcelain | grep -q . && exit 1 || exit 0
+        if [ -n "$(git status --porcelain)" ]; then
+          exit 1
+        fi

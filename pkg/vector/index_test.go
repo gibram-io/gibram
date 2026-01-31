@@ -9,6 +9,10 @@ import (
 	"testing"
 )
 
+func init() {
+	rand.Seed(1)
+}
+
 // Helper to create a random vector
 func randomVector(dim int) []float32 {
 	vec := make([]float32, dim)

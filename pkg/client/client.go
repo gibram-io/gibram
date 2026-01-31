@@ -77,8 +77,8 @@ func DefaultPoolConfig() PoolConfig {
 type pooledConn struct {
 	conn          net.Conn
 	reader        *bufio.Reader
-	lastUsed      time.Time
-	inUse         bool
+	lastUsed      atomic.Int64
+	inUse         atomic.Bool
 	authenticated bool
 	requestID     atomic.Uint64
 }
@@ -151,9 +151,9 @@ func (p *ConnPool) createConn() (*pooledConn, error) {
 	pc := &pooledConn{
 		conn:     conn,
 		reader:   bufio.NewReader(conn),
-		lastUsed: time.Now(),
-		inUse:    true,
 	}
+	pc.lastUsed.Store(time.Now().UnixNano())
+	pc.inUse.Store(true)
 
 	// Authenticate if API key is provided
 	if p.config.APIKey != "" {
@@ -227,8 +227,8 @@ func (p *ConnPool) getConn() (*pooledConn, error) {
 	// Try to get from available pool (non-blocking)
 	select {
 	case pc := <-p.available:
-		if pc != nil && time.Since(pc.lastUsed) < p.config.IdleTimeout {
-			pc.inUse = true
+		if pc != nil && time.Since(time.Unix(0, pc.lastUsed.Load())) < p.config.IdleTimeout {
+			pc.inUse.Store(true)
 			return pc, nil
 		}
 		if pc != nil {
@@ -246,7 +246,7 @@ func (p *ConnPool) getConn() (*pooledConn, error) {
 	select {
 	case pc := <-p.available:
 		if pc != nil {
-			pc.inUse = true
+			pc.inUse.Store(true)
 			return pc, nil
 		}
 	case <-time.After(p.config.ConnTimeout):
@@ -263,8 +263,8 @@ func (p *ConnPool) putConn(pc *pooledConn) {
 		return
 	}
 
-	pc.inUse = false
-	pc.lastUsed = time.Now()
+	pc.inUse.Store(false)
+	pc.lastUsed.Store(time.Now().UnixNano())
 
 	select {
 	case p.available <- pc:
@@ -307,7 +307,7 @@ func (p *ConnPool) cleanIdleConnections() {
 				if pc == nil {
 					continue
 				}
-				if time.Since(pc.lastUsed) > p.config.IdleTimeout {
+				if time.Since(time.Unix(0, pc.lastUsed.Load())) > p.config.IdleTimeout {
 					toClose = append(toClose, pc)
 				} else {
 					toReturn = append(toReturn, pc)
