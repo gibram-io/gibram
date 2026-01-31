@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+         <loc>https://gibram-io.github.io/gibram/</loc>
+         <lastmod>2026-01-31</lastmod>
+    </url>
+    <url>
+         <loc>https://gibram-io.github.io/gibram/getting-started/python-sdk/</loc>
+         <lastmod>2026-01-31</lastmod>
+    </url>
+    <url>
+         <loc>https://gibram-io.github.io/gibram/getting-started/server/</loc>
+         <lastmod>2026-01-31</lastmod>
+    </url>
+    <url>
+         <loc>https://gibram-io.github.io/gibram/sdks/python/</loc>
+         <lastmod>2026-01-31</lastmod>
+    </url>
+    <url>
+         <loc>https://gibram-io.github.io/gibram/sdks/python/quickstart/</loc>
+         <lastmod>2026-01-31</lastmod>
+    </url>
+    <url>
+         <loc>https://gibram-io.github.io/gibram/server/configuration-basics/</loc>
+         <lastmod>2026-01-31</lastmod>
+    </url>
+    <url>
+         <loc>https://gibram-io.github.io/gibram/server/troubleshooting/</loc>
+         <lastmod>2026-01-31</lastmod>
+    </url>
+</urlset>
